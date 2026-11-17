@@ -1,0 +1,39 @@
+column,role,dtype,units,fit_input,definition_and_missing_semantics
+name,raw_source_text,str,raw seller heading,False,Original title retained for provenance; not passed directly to the estimator.
+price,target,int64,KZT,False,"Unchanged advertised asking price: regression target, not a verified transaction value."
+price_raw,raw_target_text,str,source currency text,False,Original target-price wording; never a predictor.
+desc,raw_source_text,str,raw seller text,False,Original capped seller description retained for audit; full free text is not a fit input.
+link,identifier,str,source URL,False,Original listing reference; no current page content is attached to this historical observation.
+brand,existing_predictor,object,source category,True,Whitespace-normalized original brand; unknown is not an inferred manufacturer.
+model,existing_predictor,object,source category,True,Original model name; no external catalog identity or generation is inferred.
+condition,retained_auxiliary,str,source eligibility label,False,Original new/used category; not detailed mechanical condition.
+year,existing_predictor,float64,model year,True,"Original model year, not first-registration or observation date."
+mileage_km,retained_auxiliary,float64,reported km,False,"Original reported odometer value, including missing or suspicious values; not verified true distance."
+engine_liters,retained_auxiliary,float64,reported litres,False,Original parsed displacement retained for comparison with engine_liters_clean.
+fuel,existing_predictor,object,normalized source category,True,Exact structured fuel wording takes priority over the earlier parser; unavailable or unsupported fuel is unknown.
+transmission,existing_predictor,object,normalized source category,True,"Whitespace-normalized source category; unknown is unavailable, not guessed."
+drive,retained_auxiliary,str,original parser label,False,Known unreliable original extraction retained for audit and excluded from fit inputs.
+ad_id,identifier,string,source identifier,False,Original ad identity retained for provenance and split checks; never a predictor.
+dual_fuel_claim,existing_predictor,float64,0/1 source claim,True,"Supported positive gas/petrol wording; 0 means no supported claim, not confirmed absence."
+fuel_text_conflict,existing_predictor,float64,0/1 source disagreement,True,Positive dual-fuel wording disagrees with structured fuel; no mechanical truth is assigned.
+engine_source_conflict,existing_predictor,float64,0/1 source disagreement,True,Electric wording and positive displacement coexist; retain the literal discrepancy.
+engine_not_applicable,existing_predictor,float64,0/1 source state,True,"Explicit electric listing without positive displacement: corrected 0 L is inapplicability, not missingness."
+engine_liters_clean,existing_predictor,float64,litres,True,"Plausible source displacement (0.5–8 L), or explicit electric inapplicability 0 L; unavailable or invalid values stay missing."
+engine_missing,existing_predictor,float64,0/1 missingness,True,Corrected displacement is unavailable; electric inapplicability has a separate state.
+body,existing_predictor,object,normalized source text,True,Body wording from the initial used-car description prefix; unknown remains explicit.
+brand_model,existing_predictor,object,source composite category,True,Retained brand/model categorical label; not an external catalog match.
+trim,existing_predictor,object,seller token category,True,Retained supported trim wording; not_stated does not certify equipment.
+restyling_claim,existing_predictor,float64,0/1 source claim,True,Retained positive restyling wording; 0 means no supported claim.
+leather_claim,existing_predictor,float64,0/1 source claim,True,Retained positive leather wording; 0 means no supported claim.
+panorama_claim,existing_predictor,float64,0/1 source claim,True,Retained positive panoramic-roof wording; 0 means no supported claim.
+warranty_claim,existing_predictor,float64,0/1 source claim,True,Retained positive warranty wording; current coverage is not verified.
+power_kw,existing_predictor,float64,kW,True,Retained explicit description power with a recognized unit; no model-name or displacement inference.
+power_missing,existing_predictor,float64,0/1 missingness,True,No supported explicit power was extracted.
+log_km,existing_predictor,float64,log1p reported km,True,log1p of original mileage; missing mileage stays missing before train-fitted imputation.
+mileage_missing,existing_predictor,float64,0/1 missingness,True,Original reported mileage is unavailable; no odometer value is fabricated.
+steering,derived_predictor,object,literal source state,True,"Exact pre-КПП steering clause; not_stated is unknown, never assumed left-hand steering."
+vehicle_age_proxy,derived_audit,float64,years,False,"2025 minus a valid positive integral model year; unavailable, nonintegral or future years stay missing. Audit only."
+log_vehicle_age,derived_predictor,float64,log1p years,True,log1p(vehicle_age_proxy); unavailable or invalid model year stays missing.
+log_annual_mileage_proxy,derived_predictor,float64,log1p km/year proxy,True,"log1p(reported km / max(vehicle_age_proxy, 1)); invalid year or missing, negative or nonfinite mileage stays missing. Not measured annual usage."
+source_row_index,split_metadata,int64,source row index,False,"Original retained source index; metadata only, never a predictor."
+split,split_metadata,str,fixed split label,False,"Original seed-42 assignment; metadata only, never a predictor."

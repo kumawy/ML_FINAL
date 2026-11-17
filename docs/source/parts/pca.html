@@ -1,0 +1,22 @@
+<section class="scene-frame hud-scene pca3d-scene" data-scene-id="pca" data-composition-id="pca" data-start="160" data-duration="20" data-width="1920" data-height="1080" data-label="Interactive PCA geometry">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Three components</p><h1>Explore the PCA geometry</h1></header>
+    <div class="pca3d-layout" data-anim="none">
+      <div class="pca3d-plot">
+        <canvas id="pca-3d-canvas" width="2360" height="1020" tabindex="0" role="img" aria-label="Interactive three-dimensional PCA scores for all 1775 non-electric training listings. PC1, PC2 and PC3 use equal dimensionless units. Drag to rotate and use the wheel to zoom." aria-describedby="pca3d-hint pca3d-source"></canvas>
+        <p id="pca3d-view-label" class="pca3d-view-label" aria-live="polite">3D coordinate view</p>
+        <span class="pca3d-unit-label" aria-hidden="true">PCA scores · equal units</span>
+      </div>
+      <aside class="pca3d-controls" aria-label="PCA view controls">
+        <p class="pca3d-count">1,775</p>
+        <p class="pca3d-population">non-electric<br>TRAIN listings</p>
+        <p class="pca3d-variance" id="pca3d-variance">All 3 PCs · <strong>100%</strong><br>of input variance</p>
+        <div class="pca3d-legend" aria-label="K-means cluster colours"><span><i class="cluster-0"></i>Cluster 0</span><span><i class="cluster-1"></i>Cluster 1</span><span><i class="cluster-2"></i>Cluster 2</span><span><i class="cluster-3"></i>Cluster 3</span></div>
+        <div class="pca3d-view-switch" role="group" aria-label="PCA coordinate view"><button type="button" data-pca-view="3d" aria-pressed="true">3D space</button><button type="button" data-pca-view="2d" aria-pressed="false">PC1 / PC2</button></div>
+        <button type="button" class="pca3d-reset" id="pca3d-reset">Reset view</button>
+        <p class="pca3d-hint" id="pca3d-hint">Drag to rotate<br>Wheel to zoom</p>
+      </aside>
+    </div>
+    <p class="pca3d-source" id="pca3d-source">Train-standardized year, log mileage and engine size · Price excluded</p>
+  </div>
+</section>

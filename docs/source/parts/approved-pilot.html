@@ -1,0 +1,34 @@
+<div class="cockpit-backplate" aria-hidden="true"></div>
+<div class="glass-shade" aria-hidden="true"></div>
+
+<section class="scene-frame cover-scene" data-scene-id="cover" data-composition-id="cover" data-start="0" data-duration="20" data-width="1920" data-height="1080" data-label="Used-car price prediction">
+  <video id="cover-film" class="cover-film" src="../assets/car/intro-titled.mp4" poster="../assets/car/parked.png" data-start="0" data-duration="10" muted playsinline preload="auto"></video>
+</section>
+
+<section class="scene-frame hud-scene question-scene" data-scene-id="question" data-composition-id="question" data-start="20" data-duration="20" data-width="1920" data-height="1080" data-label="Research question">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Research question</p><h1>Can specifications predict<br>the asking price?</h1></header>
+    <div class="question-flow" data-anim="none">
+      <div class="feature-list" aria-label="Example predictors"><span>Year</span><span>Mileage</span><span>Engine</span><span>Brand</span><span>Model</span></div>
+      <svg class="feature-routing" viewBox="0 0 1600 310" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><path class="signal-line" d="M260 36H370Q425 36 425 85V155H615"/><path class="signal-line" d="M260 95H460V155H615"/><path class="signal-line" d="M260 155H615"/><path class="signal-line" d="M260 215H460V155H615"/><path class="signal-line" d="M260 274H370Q425 274 425 225V155H615"/><path class="prediction-line" d="M960 155H1220"/></g><path class="arrow-tip" d="M1205 144L1220 155L1205 166" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <div class="model-node"><span class="node-orbit" aria-hidden="true"></span><span>Regression<br>model</span></div>
+      <div class="prediction-node"><span>Predicted</span><strong>asking price</strong><span>in KZT</span></div>
+    </div>
+    <div class="criterion" data-anim="none"><span>Success criterion</span><p><strong>≥20% lower MAE</strong><br>than a training-median predictor</p></div>
+    <p class="context-note" data-anim="none">Kazakhstan used-car listings · Dataset labelled 2025</p>
+  </div>
+</section>
+
+
+
+<section class="scene-frame hud-scene comparison-scene" data-scene-id="comparison" data-composition-id="comparison" data-start="60" data-duration="20" data-width="1920" data-height="1080" data-label="Model comparison">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Historical test · 383 listings</p><h1 id="comparison-heading">Lowest MAE: ANN ensemble</h1></header>
+    <div class="comparison-toolbar" data-anim="none"><span id="comparison-metric-note">Test error in million KZT · Lower is better</span><div class="metric-switch" role="group" aria-label="Compare error metric"><button type="button" data-metric="mae" aria-pressed="true">MAE</button><button type="button" data-metric="rmse" aria-pressed="false">RMSE</button><button type="button" data-metric="validation" aria-pressed="false">Val MAE</button><button type="button" data-metric="r2" aria-pressed="false">R²</button><button type="button" id="comparison-table-button" aria-pressed="false">Table</button></div></div>
+    <div class="comparison-chart" id="comparison-chart" data-anim="none" role="img" aria-label="Test error for all nine model pipelines"></div>
+    <table id="comparison-table" class="complete-comparison" hidden aria-label="All nine model pipelines on the same historical split"><thead><tr><th>System</th><th>Val MAE</th><th>Test MAE</th><th>Test RMSE</th><th>Test R²</th></tr></thead><tbody><tr><th scope="row">Median baseline</th><td>6.497</td><td>5.951</td><td>11.301</td><td>-0.048</td></tr><tr><th scope="row">Linear regression</th><td>4.647</td><td>3.499</td><td>6.465</td><td>0.657</td></tr><tr><th scope="row">KNN midterm</th><td>3.179</td><td>2.443</td><td>5.889</td><td>0.715</td></tr><tr><th scope="row">Tree midterm</th><td>3.436</td><td>2.459</td><td>5.485</td><td>0.753</td></tr><tr><th scope="row">KNN tuned</th><td>3.410</td><td>2.786</td><td>6.416</td><td>0.662</td></tr><tr><th scope="row">Tree tuned</th><td>3.364</td><td>2.535</td><td>6.207</td><td>0.684</td></tr><tr><th scope="row">Random forest tuned</th><td>2.697</td><td>2.068</td><td>4.968</td><td>0.797</td></tr><tr><th scope="row">Single ANN</th><td>2.371</td><td>1.736</td><td>3.135</td><td>0.919</td></tr><tr class="ensemble-row"><th scope="row">ANN ensemble</th><td>2.238</td><td>1.635</td><td>3.190</td><td>0.917</td></tr></tbody></table>
+    <p class="comparison-note context-note">Retrospective benchmark · Different feature pipelines · Frozen ensemble: 10 ANNs + RF</p>
+  </div>
+</section>
+
+<div id="entry-transition" class="entry-transition" aria-hidden="true"><img src="../assets/car/parked.png" alt=""><div class="windshield-glint"></div></div>

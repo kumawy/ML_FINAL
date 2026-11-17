@@ -1,0 +1,143 @@
+{
+  "selected_model": "ANN ensemble",
+  "selection_metric": "Previously selected frozen recipe; no new model or blend search",
+  "seed": 42,
+  "validation": {
+    "Median baseline": {
+      "mae_kzt": 6496552.477806789,
+      "rmse_kzt": 14996202.741611594,
+      "r2": -0.0517985048,
+      "median_absolute_error_kzt": 3800000.0,
+      "median_ape": 0.5379310345,
+      "within_10pct": 0.0704960836,
+      "within_20pct": 0.1644908616,
+      "within_30pct": 0.27154047
+    },
+    "Linear regression": {
+      "mae_kzt": 4646979.751746838,
+      "rmse_kzt": 12247688.966468701,
+      "r2": 0.2984183197,
+      "median_absolute_error_kzt": 2595597.0962787587,
+      "median_ape": 0.3690072451,
+      "within_10pct": 0.1723237598,
+      "within_20pct": 0.3289817232,
+      "within_30pct": 0.4308093995
+    },
+    "KNN midterm": {
+      "mae_kzt": 3179133.654159502,
+      "rmse_kzt": 11457362.485683149,
+      "r2": 0.3860411705,
+      "median_absolute_error_kzt": 1198971.8674195483,
+      "median_ape": 0.1924687113,
+      "within_10pct": 0.3002610966,
+      "within_20pct": 0.5091383812,
+      "within_30pct": 0.6605744125
+    },
+    "Tree midterm": {
+      "mae_kzt": 3436400.1376930433,
+      "rmse_kzt": 9775996.406857671,
+      "r2": 0.5530159676,
+      "median_absolute_error_kzt": 1281111.111111111,
+      "median_ape": 0.2271706804,
+      "within_10pct": 0.2140992167,
+      "within_20pct": 0.4673629243,
+      "within_30pct": 0.6083550914
+    },
+    "KNN tuned": {
+      "mae_kzt": 3409617.569199459,
+      "rmse_kzt": 12121621.783664122,
+      "r2": 0.3127869456,
+      "median_absolute_error_kzt": 1195273.5775082437,
+      "median_ape": 0.1868015361,
+      "within_10pct": 0.2819843342,
+      "within_20pct": 0.5274151436,
+      "within_30pct": 0.6318537859
+    },
+    "Tree tuned": {
+      "mae_kzt": 3363974.385484718,
+      "rmse_kzt": 12195953.616532544,
+      "r2": 0.3043328908,
+      "median_absolute_error_kzt": 1323529.4117647056,
+      "median_ape": 0.216031746,
+      "within_10pct": 0.2036553525,
+      "within_20pct": 0.4569190601,
+      "within_30pct": 0.6214099217
+    },
+    "Random forest tuned": {
+      "mae_kzt": 2697353.057279622,
+      "rmse_kzt": 11393308.77427621,
+      "r2": 0.392886797,
+      "median_absolute_error_kzt": 945150.0,
+      "median_ape": 0.1718454545,
+      "within_10pct": 0.318537859,
+      "within_20pct": 0.5509138381,
+      "within_30pct": 0.6919060052
+    },
+    "ANN corrected": {
+      "mae_kzt": 2371127.804370948,
+      "rmse_kzt": 11550097.078341128,
+      "r2": 0.3760623231,
+      "median_absolute_error_kzt": 957786.8961057104,
+      "median_ape": 0.147918362,
+      "within_10pct": 0.3603133159,
+      "within_20pct": 0.6161879896,
+      "within_30pct": 0.7362924282
+    },
+    "ANN ensemble": {
+      "mae_kzt": 2238371.607965701,
+      "rmse_kzt": 11412167.748605328,
+      "r2": 0.390875264,
+      "median_absolute_error_kzt": 831039.4376099668,
+      "median_ape": 0.1368460151,
+      "within_10pct": 0.365535248,
+      "within_20pct": 0.6762402089,
+      "within_30pct": 0.7650130548
+    }
+  },
+  "test_policy": "Historical test errors motivated earlier feature-engineering hypotheses. This cleanup preserves the previously selected recipe. Training CV and validation control fitting/checkpoints; there is no new blend search or test-based acceptance. This reused test is retrospective and cannot establish independent generalization.",
+  "frozen_recipe": {
+    "model": "ANN ensemble",
+    "recipe_status": "Frozen before this cleanup run; no new blend search",
+    "formula": "0.25 * usage_MAE_pool + 0.75 * (0.75 * corrected_dual_pool + 0.25 * RF)",
+    "reference_for_corrected_checkpoints": "0.75 * ANN corrected + 0.25 * Random forest tuned",
+    "reference_for_usage_checkpoints": "0.75 * corrected_dual_pool + 0.25 * Random forest tuned",
+    "pool_seeds": [
+      11,
+      23,
+      42,
+      71,
+      101
+    ],
+    "component_order": [
+      "usage_MAE_seed_11",
+      "usage_MAE_seed_23",
+      "usage_MAE_seed_42",
+      "usage_MAE_seed_71",
+      "usage_MAE_seed_101",
+      "corrected_dual_seed_11",
+      "corrected_dual_seed_23",
+      "corrected_dual_seed_42",
+      "corrected_dual_seed_71",
+      "corrected_dual_seed_101",
+      "Random forest tuned"
+    ],
+    "component_weights": [
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.05,
+      0.1125,
+      0.1125,
+      0.1125,
+      0.1125,
+      0.1125,
+      0.1875
+    ],
+    "checkpoint_selection": {
+      "corrected_pool": "dual_score",
+      "usage_pool": "mae_kzt"
+    },
+    "test_data_used_for_this_run_selection": false
+  }
+}

@@ -1,0 +1,11 @@
+HyperFrames 0.9.41
+Bundled files are hyperframes-player.global.js, hyperframes-slideshow.global.js,
+and hyperframe.runtime.iife.js, copied from the hyperframes@0.9.41 npm package.
+Project: https://github.com/heygen-com/hyperframes
+License: Apache-2.0. See LICENSE-APACHE-2.0.txt.
+
+GSAP 3.15.0
+Bundled file: gsap.min.js.
+The original copyright and license notice remain in the file header.
+License: https://gsap.com/standard-license/
+Project: https://gsap.com/

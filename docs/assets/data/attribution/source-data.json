@@ -1,0 +1,122 @@
+{
+  "preparedDate": "2026-11-17",
+  "description": "Source files for the published charts and slide notes.",
+  "datasetAttribution": {
+    "creator": "mutashevdarkhan",
+    "title": "Kolesa-Cars-2025",
+    "version": "1",
+    "labelYear": 2025,
+    "url": "https://www.kaggle.com/datasets/mutashevdarkhan/kolesa-cars-2025"
+  },
+  "files": [
+    {
+      "file": "pca_projection.csv",
+      "rows": 1775,
+      "columns": [
+        "ad_id",
+        "cluster",
+        "PC1",
+        "PC2",
+        "PC3"
+      ],
+      "sha256": "8341173782a5d95282189d1ab1c3c2b05d834af6761df74a94527db07aaea845",
+      "pathFromPresentationRoot": "../code/results/pca_projection.csv"
+    },
+    {
+      "file": "pca_variance.csv",
+      "rows": 3,
+      "columns": [
+        "component",
+        "explained_variance_ratio",
+        "cumulative_explained_variance_ratio",
+        "explained_variance"
+      ],
+      "sha256": "833eb406d2a34b839001a729bae088caa0bba4336e1d7d52e5cb0d93f5fdebd2",
+      "pathFromPresentationRoot": "../code/results/pca_variance.csv"
+    },
+    {
+      "file": "pca_loadings.csv",
+      "rows": 3,
+      "columns": [
+        "component",
+        "year",
+        "log_km",
+        "engine_liters_clean"
+      ],
+      "sha256": "205945b8692179517279099e87d9f0bcf5dfea8551771bad4e7d77948bb1adb7",
+      "pathFromPresentationRoot": "../code/results/pca_loadings.csv"
+    },
+    {
+      "file": "model_comparison.csv",
+      "rows": 9,
+      "columns": [
+        "model",
+        "validation_mae_kzt",
+        "validation_rmse_kzt",
+        "validation_r2",
+        "validation_median_absolute_error_kzt",
+        "validation_median_ape",
+        "validation_within_10pct",
+        "validation_within_20pct",
+        "validation_within_30pct",
+        "test_mae_kzt",
+        "test_rmse_kzt",
+        "test_r2",
+        "test_median_absolute_error_kzt",
+        "test_median_ape",
+        "test_within_10pct",
+        "test_within_20pct",
+        "test_within_30pct",
+        "selected",
+        "representation"
+      ],
+      "sha256": "e4403c23475232ef989de6bb7d85bd988c80b9d3fdad41127a2140ac575316a3",
+      "pathFromPresentationRoot": "../code/results/model_comparison.csv"
+    },
+    {
+      "file": "unsupervised_report.json",
+      "purpose": "Training subset, preprocessing and PCA definitions",
+      "sha256": "bea7b43fc8e09cd5e5b2670c833ec57a3e1d3e778ba89e5b6b7b405baeea6163",
+      "pathFromPresentationRoot": "../code/results/unsupervised_report.json"
+    },
+    {
+      "file": "report.json",
+      "purpose": "Evaluation counts, selected frozen recipe and historical-test policy",
+      "sha256": "81b516cd294732cb8a9055195d44b8312b5493cbcfb8ddd8400c5e722b9da413",
+      "pathFromPresentationRoot": "../code/results/report.json"
+    }
+  ],
+  "derivedFiles": {
+    "pilot-data.js": {
+      "pcaPoints": 1775,
+      "models": 9,
+      "numericPolicy": "Coordinates and metrics retain the source precision. Identifiers are excluded."
+    },
+    "pilot-manifest.json": {
+      "slides": 16,
+      "notePolicy": "Speaker notes and source references."
+    }
+  },
+  "cautions": [
+    "The target is advertised asking price in KZT, not a verified transaction value.",
+    "Historical test errors motivated earlier feature-engineering hypotheses. This cleanup preserves the previously selected recipe. Training CV and validation control fitting/checkpoints; there is no new blend search or test-based acceptance. This reused test is retrospective and cannot establish independent generalization.",
+    "The nine systems share validation and historical-test IDs but use different feature representations; this is not an isolated algorithm effect.",
+    "PCA retained variance concerns three numeric input features, not price variance or prediction accuracy.",
+    "PCA and KMeans use 1,775 non-electric training listings; 12 electric training rows are excluded only from this geometry, not from supervised evaluation.",
+    "Price and categorical fields are outside PCA/KMeans fitting. Cluster labels are exploratory geometric groups, not established natural market segments.",
+    "PCA loadings are signed unit component directions, not feature-component correlations. Component signs are arbitrary.",
+    "The cockpit, HUD and Porsche are presentation imagery and do not represent a particular study observation or live vehicle valuation."
+  ],
+  "citations": [
+    {
+      "topic": "Research context",
+      "title": "Predicting used-vehicle resale value in developing markets: Application of machine learning models to the Kazakhstan car market",
+      "doi": "10.18280/isi.280512"
+    },
+    {
+      "topic": "PCA",
+      "title": "Principal component analysis: A review and recent developments",
+      "doi": "10.1098/rsta.2015.0202"
+    }
+  ]
+}

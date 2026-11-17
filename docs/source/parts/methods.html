@@ -1,0 +1,45 @@
+<section class="scene-frame hud-scene methods-scene supervised-scene" data-scene-id="supervised" data-composition-id="supervised" data-start="120" data-duration="20" data-width="1920" data-height="1080" data-label="Supervised training protocol">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Supervised learning</p><h1>Strong controls before complexity</h1></header>
+    <div class="m-supervised-body" data-anim="none">
+      <p class="m-protocol">3 shared shuffled training folds <span>Seed 42 · minimum mean MAE</span></p>
+      <div class="m-cv-head"><span>Tuned pipeline</span><span>CV MAE ± SD, m KZT</span><span>Selected configuration</span></div>
+      <div id="m-cv-lanes" class="m-cv-lanes"></div>
+    </div>
+    <div class="m-supervised-notes" data-anim="none"><p>Controls: median, linear, KNN (15),<br>tree (depth 10, leaf ≥3).</p><p>One-hot min frequency {1, 2, 5} tuned in CV.<br>Compare pipelines; fold SD is not a confidence interval.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene clusters-scene" data-scene-id="clusters" data-composition-id="clusters" data-start="140" data-duration="20" data-width="1920" data-height="1080" data-label="Exploratory KMeans clusters">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">K-means</p><h1>Four exploratory groups</h1></header>
+    <div class="m-cluster-layout" data-anim="none">
+      <figure class="m-cluster-selection"><figcaption>Highest training silhouette: <strong>k = 4</strong></figcaption><div id="m-silhouette"></div></figure>
+      <div class="m-profile-panel"><h2>Observed medians</h2><table class="m-profile-table"><thead><tr><th>Group</th><th>n</th><th>Year</th><th>Mileage<br>1,000 km</th><th>Engine<br>L</th><th>Price<br>m KZT</th></tr></thead><tbody id="m-cluster-profiles"></tbody></table></div>
+    </div>
+    <div class="m-cluster-notes" data-anim="none"><p>1,775 non-electric training rows · 12 EVs excluded only here.</p><p>Train imputation + scaling: year, log mileage, engine. Price added after fitting.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene ann-scene" data-scene-id="ann" data-composition-id="ann" data-start="180" data-duration="20" data-width="1920" data-height="1080" data-label="ANN learning curves and checkpoint">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Feedforward neural network</p><h1>A visible validation gap</h1></header>
+    <div class="m-ann-layout" data-anim="none">
+      <figure class="m-ann-figure"><figcaption>Ordinary standardized-log MSE</figcaption><div id="m-ann-curves"></div><div class="m-ann-legend"><span><i></i>Training</span><span><i></i>Validation</span><span>All 111 epochs</span></div></figure>
+      <aside class="m-ann-summary"><p class="m-ann-architecture">128 → 64 → 1</p><p class="m-ann-activations">ReLU · ReLU · linear</p><p class="m-ann-config">Adam · learning rate .001<br>Target: standardized log1p(price)</p><div class="m-ann-checkpoint"><span>Selected by validation MAE</span><strong id="m-ann-epoch">epoch 71</strong></div><div class="m-ann-maes"><p><span>Train MAE</span><strong id="m-ann-train">0.768</strong></p><p><span>Validation MAE</span><strong id="m-ann-val">2.371</strong></p></div><p class="m-ann-mae-unit">million KZT</p></aside>
+    </div>
+    <div class="m-ann-notes" data-anim="none"><p>Best checkpoint restored · stopped at 111 · patience 40 epochs.</p><p>Validation MAE +<strong id="m-ann-deterioration">2.50%</strong> from best; no 5% trigger. Overfitting remains possible.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene errors-scene" data-scene-id="errors" data-composition-id="errors" data-start="220" data-duration="20" data-width="1920" data-height="1080" data-label="Historical test error analysis">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Frozen ensemble · historical test</p><h1>High prices and unseen models are harder</h1></header>
+    <div class="m-error-layout" data-anim="none">
+      <figure><figcaption>Training-defined price quartiles</figcaption><p class="m-chart-subtitle">Cuts: 3.6 / 6.7 / 11.5 million KZT</p><div id="m-price-errors"></div></figure>
+      <figure><figcaption>Vehicle-model support in training</figcaption><p class="m-chart-subtitle">Historical test · 383 listings</p><div id="m-support-errors"></div></figure>
+    </div>
+    <div class="m-errors-summary" data-anim="none"><p><strong id="m-error-coverage">224 / 383</strong><span>within ±20% of asking price</span></p><p><strong id="m-error-electric">9.40m KZT</strong><span>Electric MAE · only n = 3</span></p><p><strong id="m-error-eqs">58.0m → 30.2m</strong><span>EQS SUV · asking → predicted KZT</span></p></div>
+    <p class="m-error-note" data-anim="none">Q4 mean residual <strong id="m-error-residual">+2.06m KZT</strong> (actual − predicted). Small groups remain descriptive.</p>
+  </div>
+</section>

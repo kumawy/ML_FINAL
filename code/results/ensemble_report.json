@@ -1,0 +1,45 @@
+{
+  "model": "ANN ensemble",
+  "recipe_status": "Frozen before this cleanup run; no new blend search",
+  "formula": "0.25 * usage_MAE_pool + 0.75 * (0.75 * corrected_dual_pool + 0.25 * RF)",
+  "reference_for_corrected_checkpoints": "0.75 * ANN corrected + 0.25 * Random forest tuned",
+  "reference_for_usage_checkpoints": "0.75 * corrected_dual_pool + 0.25 * Random forest tuned",
+  "pool_seeds": [
+    11,
+    23,
+    42,
+    71,
+    101
+  ],
+  "component_order": [
+    "usage_MAE_seed_11",
+    "usage_MAE_seed_23",
+    "usage_MAE_seed_42",
+    "usage_MAE_seed_71",
+    "usage_MAE_seed_101",
+    "corrected_dual_seed_11",
+    "corrected_dual_seed_23",
+    "corrected_dual_seed_42",
+    "corrected_dual_seed_71",
+    "corrected_dual_seed_101",
+    "Random forest tuned"
+  ],
+  "component_weights": [
+    0.05,
+    0.05,
+    0.05,
+    0.05,
+    0.05,
+    0.1125,
+    0.1125,
+    0.1125,
+    0.1125,
+    0.1125,
+    0.1875
+  ],
+  "checkpoint_selection": {
+    "corrected_pool": "dual_score",
+    "usage_pool": "mae_kzt"
+  },
+  "test_data_used_for_this_run_selection": false
+}

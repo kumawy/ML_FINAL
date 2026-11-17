@@ -1,0 +1,57 @@
+<section id="data" class="scene-frame hud-scene evidence-scene data-evidence" data-scene-id="data" data-composition-id="data" data-start="40" data-duration="20" data-width="1920" data-height="1080" data-label="Original data and cleaning">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">The original data</p><h1>3,999 advertisements → 2,553 used cars</h1></header>
+    <div class="ev-clean-flow" data-anim="none" aria-label="3999 source rows. Remove 527 new vehicles, then 51 used cars on order, then 868 repeated remaining ad IDs. Retain 2553 used-car listings.">
+      <div class="ev-clean-step"><strong>3,999</strong><p>Source rows</p><span>14 original columns</span></div>
+      <div class="ev-clean-step"><strong>3,472</strong><p>Used vehicles</p><span>−527 new vehicles</span></div>
+      <div class="ev-clean-step"><strong>3,421</strong><p>After order filter</p><span>−51 used cars on order</span></div>
+      <div class="ev-clean-step ev-clean-final"><strong>2,553</strong><p>Retained listings</p><span>−868 repeated-ID rows</span></div>
+      <svg class="ev-clean-route" viewBox="0 0 1620 34" aria-hidden="true"><path d="M0 17H1612"/><path d="M1600 6L1612 17L1600 28"/></svg>
+    </div>
+    <div class="ev-data-limits" data-anim="none">
+      <div class="ev-missing"><strong>497</strong><p>missing mileage values</p><span>Retained · Train-fitted imputation</span></div>
+      <div class="ev-source-limits"><p>Prices and difficult cases retained.</p><span>No ad dates, VIN or verified condition.<br>Different-ID relistings may remain.</span></div>
+    </div>
+    <p class="ev-bottom-note" data-anim="annotation">Kolesa-Cars-2025 · Kaggle version 1</p>
+  </div>
+</section>
+
+<section id="eda-price" class="scene-frame hud-scene evidence-scene price-evidence" data-scene-id="eda-price" data-composition-id="eda-price" data-start="60" data-duration="20" data-width="1920" data-height="1080" data-label="Price distribution and model year">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Exploratory analysis · 1 / 2</p><h1>Price has a long upper tail</h1></header>
+    <div class="ev-chart-pair" data-anim="none">
+      <figure class="ev-figure"><figcaption>Price distribution</figcaption><p class="ev-plot-scope">Training listings · n = 1,787</p><svg id="ev-price-chart" viewBox="0 0 780 330" role="img" aria-label="Counts in all six asking-price bands; every training listing included"></svg></figure>
+      <figure class="ev-figure"><figcaption>Price by model year</figcaption><p class="ev-plot-scope">1990–2025 · ≥8 training rows per year</p><svg id="ev-year-chart" viewBox="0 0 780 330" role="img" aria-label="36 observed yearly training medians, model years 1990 to 2025"></svg></figure>
+    </div>
+    <div class="ev-interpretations" data-anim="none"><p><strong>Mean 9.53m &gt; median 6.70m KZT.</strong></p><p><strong>Spearman ρ = 0.69</strong> · not causal</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">Training only · All asking prices retained</p>
+  </div>
+</section>
+
+<section id="eda-mileage" class="scene-frame hud-scene evidence-scene mileage-evidence" data-scene-id="eda-mileage" data-composition-id="eda-mileage" data-start="80" data-duration="20" data-width="1920" data-height="1080" data-label="Mileage scatter and fuel distributions">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Exploratory analysis · 2 / 2</p><h1>Mileage matters, with wide price variation</h1></header>
+    <div class="ev-chart-pair" data-anim="none">
+      <figure class="ev-figure"><figcaption>Observed mileage</figcaption><p class="ev-plot-scope">Fixed-seed training sample · n = 1,200</p><svg id="ev-mileage-chart" viewBox="0 0 780 330" role="img" aria-label="All 1200 saved training sample points, including mileage above one million kilometres and price up to 160 million KZT"></svg></figure>
+      <figure class="ev-figure"><figcaption>Price by fuel group</figcaption><p class="ev-plot-scope">All 1,787 training rows · Log price axis</p><svg id="ev-fuel-chart" viewBox="0 0 780 330" role="img" aria-label="Six exact fuel boxplots, with all outliers shown; 12 electric and 22 hybrid listings"></svg></figure>
+    </div>
+    <div class="ev-interpretations" data-anim="none"><p><strong>Spearman ρ = −0.53</strong> · wide spread</p><p><strong>Small groups</strong> · descriptive price gaps</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">Different vehicle mixes · All outliers shown · Box: middle 50% · Whiskers: 1.5 × IQR</p>
+  </div>
+</section>
+
+<section id="protocol" class="scene-frame hud-scene evidence-scene protocol-evidence" data-scene-id="protocol" data-composition-id="protocol" data-start="100" data-duration="20" data-width="1920" data-height="1080" data-label="Fitting protocol and evaluation limits">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Protocol and limits</p><h1>Clean fitting. A reused benchmark.</h1></header>
+    <div class="ev-split" data-anim="none" aria-label="1787 training, 383 validation, 383 historical test listings">
+      <div class="ev-split-part ev-train"><strong>1,787</strong><p>Training</p></div><div class="ev-split-part ev-validation"><strong>383</strong><p>Validation</p></div><div class="ev-split-part ev-test"><strong>383</strong><p>Historical test</p></div>
+      <svg class="ev-split-scale" viewBox="0 0 1620 8" aria-hidden="true"><path class="ev-split-line ev-train-line" d="M0 4H1133.936545241"/><path class="ev-split-line ev-val-line" d="M1133.936545241 4H1376.9682726205"/><path class="ev-split-line ev-test-line" d="M1376.9682726205 4H1620"/></svg>
+    </div>
+    <div class="ev-protocol-details" data-anim="none">
+      <div class="ev-fit-block"><h2>Fit only on training</h2><p>Imputation · scaling · one-hot encoding<br>Target transforms · refit each CV fold</p><span>Validation: ANN architecture + checkpoints.</span></div>
+      <div class="ev-semantics"><h2>Feature meanings</h2><p>Missing mileage ≠ zero<br>Electric engine size may not apply</p><span>Age / annual mileage are proxies.<br>Text claims ≠ verified condition.</span></div>
+    </div>
+    <div class="ev-protocol-caveat" data-anim="none"><span>Evaluation boundary</span><p>Prior test feedback shaped features; validation was reused.<br>Independent later data are needed.</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">No ad ID crosses splits; relistings may remain · Kapoor &amp; Narayanan, 2023</p>
+  </div>
+</section>

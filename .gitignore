@@ -1,0 +1,25 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+.env
+.env.*
+npm-debug.log
+node_modules/
+*.zip
+*.blend
+*.joblib
+
+# Downloaded listings and local row-level artifacts.
+code/kolesa_cars_2025.csv
+code/dataset/used_cars_enriched.csv
+code/results/all_test_predictions.csv
+code/results/all_validation_predictions.csv
+code/results/eda_mileage_sample.csv
+code/results/largest_errors.csv
+code/results/pca_projection.csv
+code/results/report.json
+code/results/selected_model_test_predictions.csv
+code/results/split_manifest.csv

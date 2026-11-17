@@ -1,0 +1,182 @@
+<div class="cockpit-backplate" aria-hidden="true"></div>
+<div class="glass-shade" aria-hidden="true"></div>
+<div id="entry-transition" class="entry-transition" aria-hidden="true"><img src="../assets/car/parked.png" alt=""><div class="windshield-glint"></div></div>
+
+<section class="scene-frame cover-scene" data-scene-id="cover" data-composition-id="cover" data-start="0" data-duration="20" data-width="1920" data-height="1080" data-label="Used-car price prediction">
+  <video id="cover-film" class="cover-film" src="../assets/car/intro-titled.mp4" poster="../assets/car/parked.png" data-start="0" data-duration="10" muted playsinline preload="auto"></video>
+</section>
+
+<section class="scene-frame hud-scene question-scene" data-scene-id="question" data-composition-id="question" data-start="20" data-duration="20" data-width="1920" data-height="1080" data-label="Research question">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Research question</p><h1>Can specifications predict<br>the asking price?</h1></header>
+    <div class="question-flow" data-anim="none">
+      <div class="feature-list" aria-label="Example predictors"><span>Year</span><span>Mileage</span><span>Engine</span><span>Brand</span><span>Model</span></div>
+      <svg class="feature-routing" viewBox="0 0 1600 310" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><path class="signal-line" d="M260 36H370Q425 36 425 85V155H615"/><path class="signal-line" d="M260 95H460V155H615"/><path class="signal-line" d="M260 155H615"/><path class="signal-line" d="M260 215H460V155H615"/><path class="signal-line" d="M260 274H370Q425 274 425 225V155H615"/><path class="prediction-line" d="M960 155H1220"/></g><path class="arrow-tip" d="M1205 144L1220 155L1205 166" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <div class="model-node"><span class="node-orbit" aria-hidden="true"></span><span>Regression<br>model</span></div>
+      <div class="prediction-node"><span>Predicted</span><strong>asking price</strong><span>in KZT</span></div>
+    </div>
+    <div class="criterion" data-anim="none"><span>Success criterion</span><p><strong>≥20% lower MAE</strong><br>than a training-median predictor</p></div>
+    <p class="context-note" data-anim="none">Kazakhstan used-car listings · Dataset labelled 2025</p>
+  </div>
+</section>
+
+<section id="data" class="scene-frame hud-scene evidence-scene data-evidence" data-scene-id="data" data-composition-id="data" data-start="40" data-duration="20" data-width="1920" data-height="1080" data-label="Original data and cleaning">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">The original data</p><h1>3,999 advertisements → 2,553 used cars</h1></header>
+    <div class="ev-clean-flow" data-anim="none" aria-label="3999 source rows. Remove 527 new vehicles, then 51 used cars on order, then 868 repeated remaining ad IDs. Retain 2553 used-car listings.">
+      <div class="ev-clean-step"><strong>3,999</strong><p>Source rows</p><span>14 original columns</span></div>
+      <div class="ev-clean-step"><strong>3,472</strong><p>Used vehicles</p><span>−527 new vehicles</span></div>
+      <div class="ev-clean-step"><strong>3,421</strong><p>After order filter</p><span>−51 used cars on order</span></div>
+      <div class="ev-clean-step ev-clean-final"><strong>2,553</strong><p>Retained listings</p><span>−868 repeated-ID rows</span></div>
+      <svg class="ev-clean-route" viewBox="0 0 1620 34" aria-hidden="true"><path d="M0 17H1612"/><path d="M1600 6L1612 17L1600 28"/></svg>
+    </div>
+    <div class="ev-data-limits" data-anim="none">
+      <div class="ev-missing"><strong>497</strong><p>missing mileage values</p><span>Retained · Train-fitted imputation</span></div>
+      <div class="ev-source-limits"><p>Prices and difficult cases retained.</p><span>No ad dates, VIN or verified condition.<br>Different-ID relistings may remain.</span></div>
+    </div>
+    <p class="ev-bottom-note" data-anim="annotation">Kolesa-Cars-2025 · Kaggle version 1</p>
+  </div>
+</section>
+
+<section id="eda-price" class="scene-frame hud-scene evidence-scene price-evidence" data-scene-id="eda-price" data-composition-id="eda-price" data-start="60" data-duration="20" data-width="1920" data-height="1080" data-label="Price distribution and model year">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Exploratory analysis · 1 / 2</p><h1>Price has a long upper tail</h1></header>
+    <div class="ev-chart-pair" data-anim="none">
+      <figure class="ev-figure"><figcaption>Price distribution</figcaption><p class="ev-plot-scope">Training listings · n = 1,787</p><svg id="ev-price-chart" viewBox="0 0 780 330" role="img" aria-label="Counts in all six asking-price bands; every training listing included"></svg></figure>
+      <figure class="ev-figure"><figcaption>Price by model year</figcaption><p class="ev-plot-scope">1990–2025 · ≥8 training rows per year</p><svg id="ev-year-chart" viewBox="0 0 780 330" role="img" aria-label="36 observed yearly training medians, model years 1990 to 2025"></svg></figure>
+    </div>
+    <div class="ev-interpretations" data-anim="none"><p><strong>Mean 9.53m &gt; median 6.70m KZT.</strong></p><p><strong>Spearman ρ = 0.69</strong> · not causal</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">Training only · All asking prices retained</p>
+  </div>
+</section>
+
+<section id="eda-mileage" class="scene-frame hud-scene evidence-scene mileage-evidence" data-scene-id="eda-mileage" data-composition-id="eda-mileage" data-start="80" data-duration="20" data-width="1920" data-height="1080" data-label="Mileage scatter and fuel distributions">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Exploratory analysis · 2 / 2</p><h1>Mileage matters, with wide price variation</h1></header>
+    <div class="ev-chart-pair" data-anim="none">
+      <figure class="ev-figure"><figcaption>Observed mileage</figcaption><p class="ev-plot-scope">Fixed-seed training sample · n = 1,200</p><svg id="ev-mileage-chart" viewBox="0 0 780 330" role="img" aria-label="All 1200 saved training sample points, including mileage above one million kilometres and price up to 160 million KZT"></svg></figure>
+      <figure class="ev-figure"><figcaption>Price by fuel group</figcaption><p class="ev-plot-scope">All 1,787 training rows · Log price axis</p><svg id="ev-fuel-chart" viewBox="0 0 780 330" role="img" aria-label="Six exact fuel boxplots, with all outliers shown; 12 electric and 22 hybrid listings"></svg></figure>
+    </div>
+    <div class="ev-interpretations" data-anim="none"><p><strong>Spearman ρ = −0.53</strong> · wide spread</p><p><strong>Small groups</strong> · descriptive price gaps</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">Different vehicle mixes · All outliers shown · Box: middle 50% · Whiskers: 1.5 × IQR</p>
+  </div>
+</section>
+
+<section id="protocol" class="scene-frame hud-scene evidence-scene protocol-evidence" data-scene-id="protocol" data-composition-id="protocol" data-start="100" data-duration="20" data-width="1920" data-height="1080" data-label="Fitting protocol and evaluation limits">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Protocol and limits</p><h1>Clean fitting. A reused benchmark.</h1></header>
+    <div class="ev-split" data-anim="none" aria-label="1787 training, 383 validation, 383 historical test listings">
+      <div class="ev-split-part ev-train"><strong>1,787</strong><p>Training</p></div><div class="ev-split-part ev-validation"><strong>383</strong><p>Validation</p></div><div class="ev-split-part ev-test"><strong>383</strong><p>Historical test</p></div>
+      <svg class="ev-split-scale" viewBox="0 0 1620 8" aria-hidden="true"><path class="ev-split-line ev-train-line" d="M0 4H1133.936545241"/><path class="ev-split-line ev-val-line" d="M1133.936545241 4H1376.9682726205"/><path class="ev-split-line ev-test-line" d="M1376.9682726205 4H1620"/></svg>
+    </div>
+    <div class="ev-protocol-details" data-anim="none">
+      <div class="ev-fit-block"><h2>Fit only on training</h2><p>Imputation · scaling · one-hot encoding<br>Target transforms · refit each CV fold</p><span>Validation: ANN architecture + checkpoints.</span></div>
+      <div class="ev-semantics"><h2>Feature meanings</h2><p>Missing mileage ≠ zero<br>Electric engine size may not apply</p><span>Age / annual mileage are proxies.<br>Text claims ≠ verified condition.</span></div>
+    </div>
+    <div class="ev-protocol-caveat" data-anim="none"><span>Evaluation boundary</span><p>Prior test feedback shaped features; validation was reused.<br>Independent later data are needed.</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">No ad ID crosses splits; relistings may remain · Kapoor &amp; Narayanan, 2023</p>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene supervised-scene" data-scene-id="supervised" data-composition-id="supervised" data-start="120" data-duration="20" data-width="1920" data-height="1080" data-label="Supervised training protocol">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Supervised learning</p><h1>Strong controls before complexity</h1></header>
+    <div class="m-supervised-body" data-anim="none">
+      <p class="m-protocol">3 shared shuffled training folds <span>Seed 42 · minimum mean MAE</span></p>
+      <div class="m-cv-head"><span>Tuned pipeline</span><span>CV MAE ± SD, m KZT</span><span>Selected configuration</span></div>
+      <div id="m-cv-lanes" class="m-cv-lanes"></div>
+    </div>
+    <div class="m-supervised-notes" data-anim="none"><p>Controls: median, linear, KNN (15),<br>tree (depth 10, leaf ≥3).</p><p>One-hot min frequency {1, 2, 5} tuned in CV.<br>Compare pipelines; fold SD is not a confidence interval.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene clusters-scene" data-scene-id="clusters" data-composition-id="clusters" data-start="140" data-duration="20" data-width="1920" data-height="1080" data-label="Exploratory KMeans clusters">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">K-means</p><h1>Four exploratory groups</h1></header>
+    <div class="m-cluster-layout" data-anim="none">
+      <figure class="m-cluster-selection"><figcaption>Highest training silhouette: <strong>k = 4</strong></figcaption><div id="m-silhouette"></div></figure>
+      <div class="m-profile-panel"><h2>Observed medians</h2><table class="m-profile-table"><thead><tr><th>Group</th><th>n</th><th>Year</th><th>Mileage<br>1,000 km</th><th>Engine<br>L</th><th>Price<br>m KZT</th></tr></thead><tbody id="m-cluster-profiles"></tbody></table></div>
+    </div>
+    <div class="m-cluster-notes" data-anim="none"><p>1,775 non-electric training rows · 12 EVs excluded only here.</p><p>Train imputation + scaling: year, log mileage, engine. Price added after fitting.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene pca3d-scene" data-scene-id="pca" data-composition-id="pca" data-start="160" data-duration="20" data-width="1920" data-height="1080" data-label="Interactive PCA geometry">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Three components</p><h1>Explore the PCA geometry</h1></header>
+    <div class="pca3d-layout" data-anim="none">
+      <div class="pca3d-plot">
+        <canvas id="pca-3d-canvas" width="2360" height="1020" tabindex="0" role="img" aria-label="Interactive three-dimensional PCA scores for all 1775 non-electric training listings. PC1, PC2 and PC3 use equal dimensionless units. Drag to rotate and use the wheel to zoom." aria-describedby="pca3d-hint pca3d-source"></canvas>
+        <p id="pca3d-view-label" class="pca3d-view-label" aria-live="polite">3D coordinate view</p>
+        <span class="pca3d-unit-label" aria-hidden="true">PCA scores · equal units</span>
+      </div>
+      <aside class="pca3d-controls" aria-label="PCA view controls">
+        <p class="pca3d-count">1,775</p>
+        <p class="pca3d-population">non-electric<br>TRAIN listings</p>
+        <p class="pca3d-variance" id="pca3d-variance">All 3 PCs · <strong>100%</strong><br>of input variance</p>
+        <div class="pca3d-legend" aria-label="K-means cluster colours"><span><i class="cluster-0"></i>Cluster 0</span><span><i class="cluster-1"></i>Cluster 1</span><span><i class="cluster-2"></i>Cluster 2</span><span><i class="cluster-3"></i>Cluster 3</span></div>
+        <div class="pca3d-view-switch" role="group" aria-label="PCA coordinate view"><button type="button" data-pca-view="3d" aria-pressed="true">3D space</button><button type="button" data-pca-view="2d" aria-pressed="false">PC1 / PC2</button></div>
+        <button type="button" class="pca3d-reset" id="pca3d-reset">Reset view</button>
+        <p class="pca3d-hint" id="pca3d-hint">Drag to rotate<br>Wheel to zoom</p>
+      </aside>
+    </div>
+    <p class="pca3d-source" id="pca3d-source">Train-standardized year, log mileage and engine size · Price excluded</p>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene ann-scene" data-scene-id="ann" data-composition-id="ann" data-start="180" data-duration="20" data-width="1920" data-height="1080" data-label="ANN learning curves and checkpoint">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Feedforward neural network</p><h1>A visible validation gap</h1></header>
+    <div class="m-ann-layout" data-anim="none">
+      <figure class="m-ann-figure"><figcaption>Ordinary standardized-log MSE</figcaption><div id="m-ann-curves"></div><div class="m-ann-legend"><span><i></i>Training</span><span><i></i>Validation</span><span>All 111 epochs</span></div></figure>
+      <aside class="m-ann-summary"><p class="m-ann-architecture">128 → 64 → 1</p><p class="m-ann-activations">ReLU · ReLU · linear</p><p class="m-ann-config">Adam · learning rate .001<br>Target: standardized log1p(price)</p><div class="m-ann-checkpoint"><span>Selected by validation MAE</span><strong id="m-ann-epoch">epoch 71</strong></div><div class="m-ann-maes"><p><span>Train MAE</span><strong id="m-ann-train">0.768</strong></p><p><span>Validation MAE</span><strong id="m-ann-val">2.371</strong></p></div><p class="m-ann-mae-unit">million KZT</p></aside>
+    </div>
+    <div class="m-ann-notes" data-anim="none"><p>Best checkpoint restored · stopped at 111 · patience 40 epochs.</p><p>Validation MAE +<strong id="m-ann-deterioration">2.50%</strong> from best; no 5% trigger. Overfitting remains possible.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene comparison-scene" data-scene-id="comparison" data-composition-id="comparison" data-start="200" data-duration="20" data-width="1920" data-height="1080" data-label="Model comparison">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Historical test · 383 listings</p><h1 id="comparison-heading">Lowest MAE: ANN ensemble</h1></header>
+    <div class="comparison-toolbar" data-anim="none"><span id="comparison-metric-note">Test error in million KZT · Lower is better</span><div class="metric-switch" role="group" aria-label="Compare error metric"><button type="button" data-metric="mae" aria-pressed="true">MAE</button><button type="button" data-metric="rmse" aria-pressed="false">RMSE</button><button type="button" data-metric="validation" aria-pressed="false">Val MAE</button><button type="button" data-metric="r2" aria-pressed="false">R²</button><button type="button" id="comparison-table-button" aria-pressed="false">Table</button></div></div>
+    <div class="comparison-chart" id="comparison-chart" data-anim="none" role="img" aria-label="Test error for all nine model pipelines"></div>
+    <table id="comparison-table" class="complete-comparison" hidden aria-label="All nine model pipelines on the same historical split"><thead><tr><th>System</th><th>Val MAE</th><th>Test MAE</th><th>Test RMSE</th><th>Test R²</th></tr></thead><tbody><tr><th scope="row">Median baseline</th><td>6.497</td><td>5.951</td><td>11.301</td><td>-0.048</td></tr><tr><th scope="row">Linear regression</th><td>4.647</td><td>3.499</td><td>6.465</td><td>0.657</td></tr><tr><th scope="row">KNN midterm</th><td>3.179</td><td>2.443</td><td>5.889</td><td>0.715</td></tr><tr><th scope="row">Tree midterm</th><td>3.436</td><td>2.459</td><td>5.485</td><td>0.753</td></tr><tr><th scope="row">KNN tuned</th><td>3.410</td><td>2.786</td><td>6.416</td><td>0.662</td></tr><tr><th scope="row">Tree tuned</th><td>3.364</td><td>2.535</td><td>6.207</td><td>0.684</td></tr><tr><th scope="row">Random forest tuned</th><td>2.697</td><td>2.068</td><td>4.968</td><td>0.797</td></tr><tr><th scope="row">Single ANN</th><td>2.371</td><td>1.736</td><td>3.135</td><td>0.919</td></tr><tr class="ensemble-row"><th scope="row">ANN ensemble</th><td>2.238</td><td>1.635</td><td>3.190</td><td>0.917</td></tr></tbody></table>
+    <p class="comparison-note context-note">Retrospective benchmark · Different feature pipelines · Frozen ensemble: 10 ANNs + RF</p>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene errors-scene" data-scene-id="errors" data-composition-id="errors" data-start="220" data-duration="20" data-width="1920" data-height="1080" data-label="Historical test error analysis">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Frozen ensemble · historical test</p><h1>High prices and unseen models are harder</h1></header>
+    <div class="m-error-layout" data-anim="none">
+      <figure><figcaption>Training-defined price quartiles</figcaption><p class="m-chart-subtitle">Cuts: 3.6 / 6.7 / 11.5 million KZT</p><div id="m-price-errors"></div></figure>
+      <figure><figcaption>Vehicle-model support in training</figcaption><p class="m-chart-subtitle">Historical test · 383 listings</p><div id="m-support-errors"></div></figure>
+    </div>
+    <div class="m-errors-summary" data-anim="none"><p><strong id="m-error-coverage">224 / 383</strong><span>within ±20% of asking price</span></p><p><strong id="m-error-electric">9.40m KZT</strong><span>Electric MAE · only n = 3</span></p><p><strong id="m-error-eqs">58.0m → 30.2m</strong><span>EQS SUV · asking → predicted KZT</span></p></div>
+    <p class="m-error-note" data-anim="none">Q4 mean residual <strong id="m-error-residual">+2.06m KZT</strong> (actual − predicted). Small groups remain descriptive.</p>
+  </div>
+</section>
+
+<section id="literature" class="scene-frame hud-scene literature-scene" data-scene-id="literature" data-composition-id="literature" data-start="240" data-duration="20" data-width="1920" data-height="1080" data-label="Related research and the gap">
+ <div class="windshield"><header class="scene-heading" data-anim="title"><p class="section-name">Related research</p><h1>Published evidence, then a new test</h1></header>
+ <div class="research-list"><div class="research-row" data-stage="0"><a href="https://doi.org/10.18280/isi.280512" target="_blank" rel="noopener" title="Barlybayev, A., Sankibayev, A., Kadyr, Y., Amangeldy, N., &amp; Sabyrov, T. (2023). Predicting used-vehicle resale value in developing markets: Application of machine learning models to the Kazakhstan car market. *Ingénierie des Systèmes d’Information, 28*(5), 1237–1246. https://doi.org/10.18280/isi.280512">Barlybayev et al. (2023)</a><p><strong>Kazakhstan precedent</strong><span>Multiple model families on local Kolesa listings.</span></p></div><div class="research-row" data-stage="0"><a href="https://doi.org/10.18280/mmep.100115" target="_blank" rel="noopener" title="Gollapalli, M., Alqahtani, T. A., Alhamed, D. H., Alnassar, M. R., Alajmi, A. M., Alali, Y. H., Abdulqader, M. M., &amp; Saadeldeen, A. (2023). Intelligent modelling techniques for predicting used cars prices in Saudi Arabia. *Mathematical Modelling of Engineering Problems, 10*(1), 139–148. https://doi.org/10.18280/mmep.100115">Gollapalli et al. (2023)</a><p><strong>Evidence across markets</strong><span>Linear and tree models on Saudi listings.</span></p></div><div class="research-row" data-stage="1"><a href="https://doi.org/10.1016/j.eswa.2023.121277" target="_blank" rel="noopener" title="Sharma, J., &amp; Mitra, S. K. (2024). Developing a used car pricing model applying multivariate adaptive regression splines approach. *Expert Systems with Applications, 236*, Article 121277. https://doi.org/10.1016/j.eswa.2023.121277">Sharma &amp; Mitra (2024)</a><p><strong>Nonlinear relationships</strong><span>Multivariate adaptive regression splines.</span></p></div><div class="research-row" data-stage="1"><a href="https://doi.org/10.1016/j.eswa.2024.125640" target="_blank" rel="noopener" title="Bergmann, S., &amp; Feuerriegel, S. (2025). Machine learning for predicting used car resale prices using granular vehicle equipment information. *Expert Systems with Applications, 263*, Article 125640. https://doi.org/10.1016/j.eswa.2024.125640">Bergmann &amp; Feuerriegel (2025)</a><p><strong>More detailed inputs</strong><span>Granular vehicle equipment information.</span></p></div><div class="research-row" data-stage="2"><a href="https://doi.org/10.3390/electronics11182932" target="_blank" rel="noopener" title="Cui, B., Ye, Z., Zhao, H., Renqing, Z., Meng, L., &amp; Yang, Y. (2022). Used car price prediction based on the iterative framework of XGBoost+LightGBM. *Electronics, 11*(18), Article 2932. https://doi.org/10.3390/electronics11182932">Cui et al. (2022)</a><p><strong>A different hybrid design</strong><span>Iterative boosting / neural framework.</span></p></div><div class="research-row" data-stage="2"><a href="https://doi.org/10.52202/068431-0037" target="_blank" rel="noopener" title="Grinsztajn, L., Oyallon, E., &amp; Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? *Advances in Neural Information Processing Systems, 35*, 507–520. https://doi.org/10.52202/068431-0037">Grinsztajn et al. (2022)</a><p><strong>Strong tabular controls</strong><span>Tree baselines alongside neural networks.</span></p></div></div><div class="research-gap" data-anim="annotation"><span>Open question</span><p>Does our ranking persist on new, dated Kazakhstan listings?</p></div><p class="research-limit">Different datasets and currencies prevent direct score rankings. <a href="../references.html" target="_blank" rel="noopener">Full APA bibliography</a> accompanies the report.</p></div>
+</section>
+
+<section id="proposal" class="scene-frame hud-scene proposal-scene" data-scene-id="proposal" data-composition-id="proposal" data-start="260" data-duration="20" data-width="1920" data-height="1080" data-label="Proposed independent follow-up">
+ <div class="windshield"><header class="scene-heading" data-anim="title"><p class="section-name">Future study · not completed</p><h1>A six-week independent follow-up</h1></header>
+ <div class="proposal-scope" data-anim="none"><div data-stage="0"><p class="later-count">800–1,200</p><p class="later-label">distinct later listings</p><p class="scope-note">Feasibility target, if access permits.</p></div><div class="frozen-methods" data-stage="1"><p class="minor-heading">Freeze before evaluation</p><p>Ensemble · single ANN<br>Random forest · training median</p><span>Same eligible listings for all four.</span></div></div>
+ <div class="proposal-outcome" data-stage="2"><span>Paired MAE difference</span><p>MAE(ensemble) − MAE(training median)</p><small>Vehicle-group bootstrap if linkage is reliable.</small></div>
+ <div class="study-weeks" data-anim="none"><div data-stage="0"><b>1</b><span>Access and<br>protocol</span></div><div class="week-pair" data-stage="1"><b>2–3</b><span>Collect<br>and audit</span></div><div data-stage="2"><b>4</b><span>Frozen<br>predictions</span></div><div data-stage="2"><b>5</b><span>Uncertainty<br>and shift</span></div><div data-stage="2"><b>6</b><span>Report<br>all outcomes</span></div></div>
+ <p class="proposal-boundary" data-anim="annotation">New training or tuning is exploratory.</p></div>
+</section>
+
+<section id="conclusion" class="scene-frame exterior-scene conclusion-scene" data-scene-id="conclusion" data-composition-id="conclusion" data-start="280" data-duration="20" data-width="1920" data-height="1080" data-label="Results and team">
+ <img class="outro-wide" src="../assets/car-finale-v3/neutral.png" alt="Porsche 911 GT3 R, returning to the opening camera view">
+ <div class="exterior-results" data-anim="none"><p class="section-name">Results and team</p><h1>Historical test MAE</h1><div class="exterior-numbers"><strong>1.635<span> million KZT</span></strong><p><b>72.53%</b><span>below the training-median baseline</span></p></div></div>
+ <div class="exterior-roles" data-anim="none"><div><h2>Alisher Akhmet</h2><p>Dataset sourcing, cleaning, feature engineering,<br>EDA, K-Means and PCA</p></div><div><h2>Aslan Muratov</h2><p>Supervised models, CV, ANN and ensemble,<br>metrics, error analysis and reproducibility</p></div></div>
+</section>
+
+<section id="thanks" class="scene-frame exterior-scene thanks-scene" data-scene-id="thanks" data-composition-id="thanks" data-start="300" data-duration="20" data-width="1920" data-height="1080" data-label="Thank you!">
+ <video id="thanks-film" class="outro-wide thanks-film" src="../assets/car-finale-v7/closing.mp4" poster="../assets/car-finale-v3/neutral.png" data-start="300" data-duration="5.066667" data-pass-start-frame="59" data-pass-end-frame="131" data-pass-fps="30" data-rear-start="-929.9999" data-rear-step="40.694444" data-light-end="1.8" muted playsinline preload="auto" aria-hidden="true"></video>
+ <div class="thanks-whiteout" aria-hidden="true"></div><h1 id="thanks-title" class="thanks-title">THANK YOU!</h1>
+</section>

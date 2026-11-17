@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <title>ML Final — Cockpit Presentation Composition</title>
+  <style>
+    html,body {width:1920px;height:1080px;margin:0;overflow:hidden;}
+    body {position:relative;background:#080d12;}
+    .scene-frame {position:absolute;inset:0;width:1920px;height:1080px;opacity:0;visibility:hidden;pointer-events:none;}
+    .scene-frame[data-active="true"] {opacity:1;visibility:visible;pointer-events:auto;}
+  </style>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="evidence.css">
+  <link rel="stylesheet" href="methods.css">
+  <link rel="stylesheet" href="synthesis.css">
+  <link rel="stylesheet" href="pca-3d.css">
+  <link rel="stylesheet" href="cinematic.css">
+  <link rel="stylesheet" href="finale-type.css">
+  <script src="../assets/vendor/gsap.min.js"></script>
+  <script src="../assets/data/deck-data.js"></script>
+  <script src="../assets/data/evidence-data.js"></script>
+  <script src="../assets/data/pilot-data.js"></script>
+</head>
+<body>
+  <script type="application/hyperframes-slideshow+json">
+{
+  "slides": [
+    {
+      "sceneId": "cover",
+      "notes": "**Алишер:** Проект продолжает midterm и endterm: оценивает цену предложения подержанного автомобиля в Казахстане по характеристикам объявления. Тема и исходный датасет сохранены.\n\n**Аслан:** В Final объединены результаты, обзор исследований и предложение следующего исследования. Target — цена, которую указал продавец, в тенге. Мы не располагаем подтверждёнными ценами сделок.",
+      "startTime": 0,
+      "endTime": 20,
+      "autoplay": true
+    },
+    {
+      "sceneId": "question",
+      "notes": "**Алишер:** Исследовательский вопрос: насколько точно характеристики автомобиля позволяют оценить цену предложения в этом снимке рынка? Практическое применение — исторический ориентир для сравнения объявлений. Работа Barlybayev и коллег показывает, что похожая задача уже исследовалась на данных Казахстана, но у них другой набор наблюдений.\n\n**Аслан:** С midterm сохранён критерий: MAE минимум на 20% ниже прогноза медианой обучающей выборки. MAE измеряет среднюю абсолютную ошибку в тенге. Дополнительно нужны RMSE, R² и относительные ошибки, поскольку они отражают разные свойства прогноза.",
+      "startTime": 20,
+      "endTime": 40
+    },
+    {
+      "sceneId": "data",
+      "notes": "Источник — Kolesa-Cars-2025 на Kaggle. В оригинале 3 999 строк и 14 столбцов. Удалены 527 новых автомобилей, 51 подержанный автомобиль под заказ и 868 повторных ID оставшихся объявлений. Получено 2 553 объявления о подержанных автомобилях. Исходный CSV и цены сохранены; синтетических наблюдений нет.\n\nВ 497 строках отсутствует пробег. Нет индивидуальных дат объявлений, VIN, структурированного местоположения и проверенного технического состояния. Поэтому дубли одного автомобиля с разными ID исключить полностью нельзя. Хеш исходного файла проверяется загрузчиком.",
+      "startTime": 40,
+      "endTime": 60
+    },
+    {
+      "sceneId": "eda-price",
+      "notes": "EDA строится только по TRAIN. У распределения цены длинный правый хвост: среднее около 9,53 млн тенге, медиана 6,70 млн. Дорогие автомобили сильно влияют на squared error, поэтому дополнительно рассматриваются MAE и относительные ошибки.\n\nНа графике года показаны медианные цены для лет с минимум восемью наблюдениями. Корреляция Спирмена между годом и ценой около 0,69. Связь описательная: она не измеряет причинное обесценивание одного автомобиля, потому что одновременно отличаются марки, комплектации и другие свойства.",
+      "startTime": 60,
+      "endTime": 80
+    },
+    {
+      "sceneId": "eda-mileage",
+      "notes": "Для известного пробега корреляция с ценой около −0,53, но разброс большой. Scatter использует воспроизводимую выборку максимум из 1 200 TRAIN строк с известным пробегом. Один пробег не определяет стоимость.\n\nГрафик топлива показывает все TRAIN наблюдения на логарифмической оси цены. Малые группы, например электромобили, не дают оснований для широких выводов о рынке. Различия могут отражать состав моделей. Нулевой флаг оборудования означает, что положительное утверждение не обнаружено в тексте, а не то, что оборудования точно нет.",
+      "startTime": 80,
+      "endTime": 100
+    },
+    {
+      "sceneId": "protocol",
+      "notes": "**Алишер:** Split фиксирован: 1 787 TRAIN, 383 validation и 383 исторических test. Одинаковые ID объявлений не пересекаются. Пропущенный пробег и неприменимый объём двигателя электромобиля различаются. Топливо и руль извлекаются по явным формулировкам. Возраст считается относительно снимка 2025 года. Пробег, делённый на возраст, — математический proxy, а не измеренная история эксплуатации.\n\n**Аслан:** Imputer, scaler, encoder и преобразование target обучаются только на TRAIN. В CV они заново обучаются внутри каждого fold. Но прежние ошибки test уже влияли на разработку признаков, а validation использовался многократно. Поэтому test — retrospective benchmark. Этот запуск воспроизводит зафиксированную систему; независимую будущую точность он не доказывает.",
+      "startTime": 100,
+      "endTime": 120
+    },
+    {
+      "sceneId": "supervised",
+      "notes": "Сохранены медианный baseline, Linear Regression, исходный KNN с 15 соседями и дерево глубины 10 с минимумом 3 объекта в листе. Для новых KNN, Tree и Random Forest используется одинаковая трёхфолдовая CV только внутри TRAIN, shuffle и seed 42. Критерий подбора — отрицательная MAE в тенге, то есть максимизация score эквивалентна минимизации ошибки.\n\nВыбраны KNN с 5 соседями, Manhattan distance и distance weighting; дерево глубины 10 с leaf size 3; RF с 200 деревьями, max_features 0,7 и leaf size 1. CV MAE леса около 2,17 млн. Разброс по folds — стандартное отклонение, не доверительный интервал. Сравниваются целые pipelines с различающимися признаками.",
+      "startTime": 120,
+      "endTime": 140
+    },
+    {
+      "sceneId": "clusters",
+      "notes": "K-Means использует год, log пробега и очищенный объём двигателя. Из этой геометрии исключены 12 электрических TRAIN автомобилей: объём двигателя для них неприменим. В supervised learning они сохранены. Остаётся 1 775 строк.\n\nПосле TRAIN median imputation и StandardScaler проверены k от 2 до 8. Максимальный silhouette около 0,369 при k=4. Профили отражают относительно новые автомобили с небольшим пробегом, старые автомобили и различия объёма двигателя. Цена добавлена после fitting для описания групп. Категории марки/модели не участвуют; устойчивость кластеров отдельно не исследована. Поэтому это геометрические группы выбранных признаков.",
+      "startTime": 140,
+      "endTime": 160
+    },
+    {
+      "sceneId": "pca",
+      "notes": "На экране все 1775 неэлектрических TRAIN-объявлений в координатах PC1, PC2 и PC3. Мышью можно вращать систему, колёсиком менять масштаб, Reset view возвращает исходный ракурс. В режиме P ракурс синхронизируется с аудиторией. Три компоненты сохраняют 100% дисперсии трёх входов; кнопка PC1 / PC2 показывает двумерную проекцию с 80,13%.\n\nPCA обучена на 1775 неэлектрических TRAIN-объявлениях. Три входа: год, log(1 + пробег) и объём двигателя. Пропуски заполнены TRAIN-медианами, затем признаки стандартизованы на TRAIN. Цвета — группы KMeans, обученные в исходном пространстве этих трёх входов. Обучены три компоненты. PC1 объясняет 47,67%, PC2 — 32,46%, вместе 80,13%. В режиме PC1 / PC2 оставлены две; потеря составляет 19,87% вариации этих входов.\n\nPC1 противопоставляет более новый год большему пробегу. PC2 главным образом связан с объёмом двигателя. Loadings здесь — коэффициенты единичных направлений, а не корреляции. Знак компоненты может поменяться без изменения смысла. PCA помогает увидеть структуру; её explained variance не означает долю объяснённой цены или улучшение регрессии.",
+      "startTime": 160,
+      "endTime": 180
+    },
+    {
+      "sceneId": "ann",
+      "notes": "ANN — feedforward MLP с ReLU в скрытых слоях и линейным выходом. Adam, learning rate 0,001, L2 alpha 0,001, batch 64. Target — стандартизованный log1p цены. После inverse transform прогноз оценивается в тенге. Loss при обучении в log scale и MAE в деньгах — разные цели.\n\nСравниваются архитектуры 64–32 и 128–64. Большая сеть выбрана по минимальной validation MAE на эпохе 71. Всего 111 эпох: после лучшей ещё 40 без улучшения, затем остановка с восстановлением checkpoint.\n\nTrain MAE выбранного checkpoint — 0,768 млн, validation MAE — 2,371 млн. Разрыв существенный. Условный сигнал ухудшения validation более чем на 5% не сработал: ухудшение около 2,50%. Это не доказательство отсутствия overfitting. Истории обеих архитектур сохранены.",
+      "startTime": 180,
+      "endTime": 200
+    },
+    {
+      "sceneId": "comparison",
+      "notes": "График содержит все девять моделей и одинаковые validation/test ID. Признаки различаются, поэтому нельзя приписать всю разницу только алгоритму. Ансамбль имеет минимальную test MAE: 1,635 млн тенге, на 72,53% ниже медианы и на 33,09% ниже исходного KNN.\n\nТюнинг не гарантирует улучшения: новые KNN и Tree на историческом test хуже исходных по MAE. Одиночная ANN лучше ансамбля по RMSE и R², а RF — по median APE. Основная цель проекта — MAE, поэтому сохранён ансамбль.\n\nValidation содержит объявление за 222 млн, максимум test — 93,5 млн. Разница хвостов влияет на RMSE и R²: у ансамбля validation R² около 0,391, test около 0,917. Это требует осторожной интерпретации и независимой проверки, а не вывода о гарантированной рыночной точности.\n\nЭто ретроспективное сравнение: исторический test уже использовался в разработке, поэтому он не является новой независимой проверкой. Сохранён ранее выбранный замороженный рецепт ансамбля; нового поиска по test не проводилось.\n\nРецепт сохранённого ансамбля: 0.25 × usage-MAE pool + 0.75 × (0.75 × corrected-dual pool + 0.25 × random forest), суммарно десять нейросетей и RF. В этом запуске веса не подбирались заново.",
+      "startTime": 200,
+      "endTime": 220
+    },
+    {
+      "sceneId": "errors",
+      "notes": "Ценовые границы 3,6 / 6,7 / 11,5 млн определены по TRAIN. На test в верхней группе MAE около 4,09 млн, в нижней 0,78 млн. Средний residual верхней группы положителен: actual минус prediction показывает недооценку.\n\nДля моделей автомобилей, которых не было в TRAIN, MAE 3,59 млн при 42 строках; при минимум пяти обучающих примерах — 1,33 млн. В электрической группе лишь три test автомобиля, поэтому её большая ошибка не даёт устойчивой общей оценки.\n\nТолько 224 из 383 прогнозов попадают в ±20% цены. Высокий R² не означает, что 92% отдельных прогнозов точны.",
+      "startTime": 220,
+      "endTime": 240
+    },
+    {
+      "sceneId": "literature",
+      "notes": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана.",
+      "startTime": 240,
+      "endTime": 260
+    },
+    {
+      "sceneId": "proposal",
+      "notes": "**Алишер:** Это план будущей работы. Исходный датасет остаётся development data. Нужен независимый снимок с записанными датами и разрешённым способом получения. Ориентир 800–1 200 уникальных подходящих объявлений — организационная цель, не расчёт статистической мощности. До оценки фиксируются правила отбора и проверки повторных автомобилей.\n\n**Аслан:** До просмотра независимых цен замораживаются модели, преобразования и основная проверка разницы MAE ансамбля и медианы. Сравниваются сохранённые ансамбль, одиночная ANN, RF и медианный baseline на одинаковых новых строках. Историческая таблица девяти моделей остаётся отдельно. Новый тюнинг — отдельный development-эксперимент. Далее bootstrap по группам автомобилей при надёжной идентификации, counts подгрупп и анализ distribution shift. План на шесть недель: протокол и разрешения; две недели сбора и проверки; фиксация и оценка; неопределённость; отчёт. Отсутствие убедительного преимущества ансамбля тоже будет результатом.",
+      "startTime": 260,
+      "endTime": 280
+    },
+    {
+      "sceneId": "conclusion",
+      "notes": "Итог: MAE сохранённого ансамбля на историческом test — 1,635 млн тенге, на 72,53% ниже TRAIN-медианы. Это ретроспективное сравнение; для вывода о будущих данных нужна независимая проверка.\n\nАлишер: dataset sourcing, cleaning, feature engineering, EDA, K-Means and PCA. Аслан: supervised models, CV, ANN and ensemble, metrics, error analysis and reproducibility. Распределение ролей совпадает с endterm.",
+      "startTime": 280,
+      "endTime": 300
+    },
+    {
+      "sceneId": "thanks",
+      "notes": "Завершение выступления и переход к вопросам.",
+      "startTime": 300,
+      "endTime": 320,
+      "autoplay": true
+    }
+  ]
+}
+  </script>
+  <script id="pilot-scene-manifest" type="application/json">
+[
+  {
+    "sceneId": "cover",
+    "start": 0,
+    "duration": 20,
+    "title": "Used-car asking prices in Kazakhstan",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 25,
+    "notes": "**Алишер:** Проект продолжает midterm и endterm: оценивает цену предложения подержанного автомобиля в Казахстане по характеристикам объявления. Тема и исходный датасет сохранены.\n\n**Аслан:** В Final объединены результаты, обзор исследований и предложение следующего исследования. Target — цена, которую указал продавец, в тенге. Мы не располагаем подтверждёнными ценами сделок.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Alisher: We continue our midterm project on used-car asking prices in Kazakhstan. We keep the original data and compare the existing methods with the extended workflow. Aslan: This final presentation connects the practical results to published research and proposes a genuinely independent evaluation. Our target is the advertised price in tenge. The scores describe historical listings.",
+    "sources": [
+      "mutashevdarkhan. (2025). Kolesa-Cars-2025 (Version 1) [Data set]. Kaggle. https://www.kaggle.com/datasets/mutashevdarkhan/kolesa-cars-2025",
+      "Project evidence: ../code/results/report.json. Original dataset and previously selected recipe unchanged."
+    ],
+    "notesRU": "**Алишер:** Проект продолжает midterm и endterm: оценивает цену предложения подержанного автомобиля в Казахстане по характеристикам объявления. Тема и исходный датасет сохранены.\n\n**Аслан:** В Final объединены результаты, обзор исследований и предложение следующего исследования. Target — цена, которую указал продавец, в тенге. Мы не располагаем подтверждёнными ценами сделок."
+  },
+  {
+    "sceneId": "question",
+    "start": 20,
+    "duration": 20,
+    "title": "Research question and success criterion",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 40,
+    "notes": "**Алишер:** Исследовательский вопрос: насколько точно характеристики автомобиля позволяют оценить цену предложения в этом снимке рынка? Практическое применение — исторический ориентир для сравнения объявлений. Работа Barlybayev и коллег показывает, что похожая задача уже исследовалась на данных Казахстана, но у них другой набор наблюдений.\n\n**Аслан:** С midterm сохранён критерий: MAE минимум на 20% ниже прогноза медианой обучающей выборки. MAE измеряет среднюю абсолютную ошибку в тенге. Дополнительно нужны RMSE, R² и относительные ошибки, поскольку они отражают разные свойства прогноза.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Alisher: Can vehicle specifications predict the advertised asking price of a used car in Kazakhstan? The intended use is a historical pricing reference. Seller asking prices can differ from completed transactions. Published local work by Barlybayev and colleagues supports comparing several model families on Kolesa advertisements, but it uses a different dataset. Aslan: We retain our midterm criterion: at least twenty percent lower MAE than the training-median predictor. MAE is our primary metric because it measures average absolute error in tenge. RMSE and relative errors reveal different weaknesses. The final study asks whether the frozen extended system improves this retrospective benchmark, without treating it as an independent test.",
+    "sources": [
+      "Barlybayev, A., et al. (2023). Predicting used-vehicle resale value in developing markets: Application of machine learning models to the Kazakhstan car market. Ingénierie des Systèmes d’Information, 28(5), 1237–1246. https://doi.org/10.18280/isi.280512",
+      "Criterion and evaluation: ../README.md; ../code/results/report.json, evaluation."
+    ],
+    "notesRU": "**Алишер:** Исследовательский вопрос: насколько точно характеристики автомобиля позволяют оценить цену предложения в этом снимке рынка? Практическое применение — исторический ориентир для сравнения объявлений. Работа Barlybayev и коллег показывает, что похожая задача уже исследовалась на данных Казахстана, но у них другой набор наблюдений.\n\n**Аслан:** С midterm сохранён критерий: MAE минимум на 20% ниже прогноза медианой обучающей выборки. MAE измеряет среднюю абсолютную ошибку в тенге. Дополнительно нужны RMSE, R² и относительные ошибки, поскольку они отражают разные свойства прогноза."
+  },
+  {
+    "sceneId": "data",
+    "start": 40,
+    "duration": 20,
+    "title": "Original data and cleaning",
+    "speaker": "Alisher",
+    "speakingSeconds": 40,
+    "notes": "Источник — Kolesa-Cars-2025 на Kaggle. В оригинале 3 999 строк и 14 столбцов. Удалены 527 новых автомобилей, 51 подержанный автомобиль под заказ и 868 повторных ID оставшихся объявлений. Получено 2 553 объявления о подержанных автомобилях. Исходный CSV и цены сохранены; синтетических наблюдений нет.\n\nВ 497 строках отсутствует пробег. Нет индивидуальных дат объявлений, VIN, структурированного местоположения и проверенного технического состояния. Поэтому дубли одного автомобиля с разными ID исключить полностью нельзя. Хеш исходного файла проверяется загрузчиком.",
+    "notesLanguage": "ru",
+    "notesEnglish": "We use the bundled Kolesa-Cars-2025 dataset from Kaggle. The source has 3,999 rows and fourteen columns. Removing 527 new vehicles, 51 used vehicles offered on order and 868 repeated remaining advertisement identifiers leaves 2,553 used-car listings. No synthetic project observations or difficult-price exclusions enter the analysis. We keep the original target and source row order. The loader checks both the source file hash and advertisement identifiers. There are 497 missing mileage values. Individual listing dates, verified condition, locations and vehicle identification numbers are unavailable, which limits practical price estimates and duplicate detection across different advertisement IDs.",
+    "sources": [
+      "Dataset: https://www.kaggle.com/datasets/mutashevdarkhan/kolesa-cars-2025",
+      "Evidence: ../code/results/report.json, data. Source SHA256 b348551cd876bde7d25fce79c3fcdbd05920403c567a6aedc0e0a5e19e260468.",
+      "No synthetic project observations, new target values or expensive-vehicle exclusions were added."
+    ],
+    "notesRU": "Источник — Kolesa-Cars-2025 на Kaggle. В оригинале 3 999 строк и 14 столбцов. Удалены 527 новых автомобилей, 51 подержанный автомобиль под заказ и 868 повторных ID оставшихся объявлений. Получено 2 553 объявления о подержанных автомобилях. Исходный CSV и цены сохранены; синтетических наблюдений нет.\n\nВ 497 строках отсутствует пробег. Нет индивидуальных дат объявлений, VIN, структурированного местоположения и проверенного технического состояния. Поэтому дубли одного автомобиля с разными ID исключить полностью нельзя. Хеш исходного файла проверяется загрузчиком."
+  },
+  {
+    "sceneId": "eda-price",
+    "start": 60,
+    "duration": 20,
+    "title": "Training price and model-year patterns",
+    "speaker": "Alisher",
+    "speakingSeconds": 40,
+    "notes": "EDA строится только по TRAIN. У распределения цены длинный правый хвост: среднее около 9,53 млн тенге, медиана 6,70 млн. Дорогие автомобили сильно влияют на squared error, поэтому дополнительно рассматриваются MAE и относительные ошибки.\n\nНа графике года показаны медианные цены для лет с минимум восемью наблюдениями. Корреляция Спирмена между годом и ценой около 0,69. Связь описательная: она не измеряет причинное обесценивание одного автомобиля, потому что одновременно отличаются марки, комплектации и другие свойства.",
+    "notesLanguage": "ru",
+    "notesEnglish": "All four exploratory charts use training listings only. The price distribution has a long upper tail: the mean is 9.53 million tenge, while the median is 6.70 million. This helps explain why a few expensive vehicles have a large effect on squared error. The model-year chart shows the median only for years with at least eight training observations. The rank correlation between year and asking price is approximately 0.69. This is an association across different vehicles and equipment mixes. It does not measure the causal depreciation of an individual car. We preserve the expensive observations rather than excluding them to improve the score.",
+    "sources": [
+      "../code/results/eda_price_bands.csv; ../code/results/eda_year.csv; ../code/results/report.json, eda. Native chart values retain the complete source rows.",
+      "Year medians include model years at least 1990 with at least eight training listings, as defined in ../code/run_project.py."
+    ],
+    "notesRU": "EDA строится только по TRAIN. У распределения цены длинный правый хвост: среднее около 9,53 млн тенге, медиана 6,70 млн. Дорогие автомобили сильно влияют на squared error, поэтому дополнительно рассматриваются MAE и относительные ошибки.\n\nНа графике года показаны медианные цены для лет с минимум восемью наблюдениями. Корреляция Спирмена между годом и ценой около 0,69. Связь описательная: она не измеряет причинное обесценивание одного автомобиля, потому что одновременно отличаются марки, комплектации и другие свойства."
+  },
+  {
+    "sceneId": "eda-mileage",
+    "start": 80,
+    "duration": 20,
+    "title": "Training mileage and fuel patterns",
+    "speaker": "Alisher",
+    "speakingSeconds": 40,
+    "notes": "Для известного пробега корреляция с ценой около −0,53, но разброс большой. Scatter использует воспроизводимую выборку максимум из 1 200 TRAIN строк с известным пробегом. Один пробег не определяет стоимость.\n\nГрафик топлива показывает все TRAIN наблюдения на логарифмической оси цены. Малые группы, например электромобили, не дают оснований для широких выводов о рынке. Различия могут отражать состав моделей. Нулевой флаг оборудования означает, что положительное утверждение не обнаружено в тексте, а не то, что оборудования точно нет.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Observed mileage has a negative rank correlation with price, approximately minus 0.53. The scatter uses a fixed-seed sample of up to 1,200 known-mileage training rows, so the visual is reproducible. There is substantial spread at any given mileage. The fuel chart retains every training row and uses a logarithmic price axis. Group counts matter: the electric and hybrid groups are small and contain different vehicle mixes. A zero equipment-claim flag means that a positive claim was not stated, rather than verified absence. These charts motivate careful feature semantics and descriptive subgroup analysis, without supporting causal claims about fuel or mileage.",
+    "sources": [
+      "Source evidence images: ../code/results/eda_mileage.png; ../code/results/eda_fuel.png.",
+      "Counts, correlation and chart protocol: ../code/results/report.json, eda; ../code/run_project.py, explore(). Fuel groups are descriptive, not causal."
+    ],
+    "notesRU": "Для известного пробега корреляция с ценой около −0,53, но разброс большой. Scatter использует воспроизводимую выборку максимум из 1 200 TRAIN строк с известным пробегом. Один пробег не определяет стоимость.\n\nГрафик топлива показывает все TRAIN наблюдения на логарифмической оси цены. Малые группы, например электромобили, не дают оснований для широких выводов о рынке. Различия могут отражать состав моделей. Нулевой флаг оборудования означает, что положительное утверждение не обнаружено в тексте, а не то, что оборудования точно нет."
+  },
+  {
+    "sceneId": "protocol",
+    "start": 100,
+    "duration": 20,
+    "title": "Features, splitting and evaluation limits",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 55,
+    "notes": "**Алишер:** Split фиксирован: 1 787 TRAIN, 383 validation и 383 исторических test. Одинаковые ID объявлений не пересекаются. Пропущенный пробег и неприменимый объём двигателя электромобиля различаются. Топливо и руль извлекаются по явным формулировкам. Возраст считается относительно снимка 2025 года. Пробег, делённый на возраст, — математический proxy, а не измеренная история эксплуатации.\n\n**Аслан:** Imputer, scaler, encoder и преобразование target обучаются только на TRAIN. В CV они заново обучаются внутри каждого fold. Но прежние ошибки test уже влияли на разработку признаков, а validation использовался многократно. Поэтому test — retrospective benchmark. Этот запуск воспроизводит зафиксированную систему; независимую будущую точность он не доказывает.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Alisher: The fixed split contains 1,787 training, 383 validation and 383 historical-test listings. No advertisement ID crosses the boundaries. We distinguish missing mileage and missing engine values from explicitly electric displacement that does not apply. Literal specification text corrects fuel and adds steering information. The age proxy uses the fixed 2025 snapshot, and annual mileage divides reported mileage by at least one year. These are mathematical proxies, not observed usage histories. Aslan: Imputation, scaling, one-hot encoding and target scaling fit only training data. Cross-validation refits those transformations within each fold. Validation selects ANN architectures and checkpoints. However, earlier test errors influenced feature engineering, and validation has been reused. This test is therefore retrospective. Our clean fitting boundaries do not remove that earlier research feedback. Independent later data remains necessary.",
+    "sources": [
+      "Kapoor, S., & Narayanan, A. (2023). Leakage and the reproducibility crisis in machine-learning-based science. Patterns, 4(9), 100804. https://doi.org/10.1016/j.patter.2023.100804",
+      "Evidence: ../code/results/split_manifest.csv; report.json, data/evaluation; selection_before_test.json.",
+      "No ad ID crosses splits. Different-ID relistings remain a possible dependence. Per-row feature extraction uses original fields only and excludes target/price_raw/IDs/links."
+    ],
+    "notesRU": "**Алишер:** Split фиксирован: 1 787 TRAIN, 383 validation и 383 исторических test. Одинаковые ID объявлений не пересекаются. Пропущенный пробег и неприменимый объём двигателя электромобиля различаются. Топливо и руль извлекаются по явным формулировкам. Возраст считается относительно снимка 2025 года. Пробег, делённый на возраст, — математический proxy, а не измеренная история эксплуатации.\n\n**Аслан:** Imputer, scaler, encoder и преобразование target обучаются только на TRAIN. В CV они заново обучаются внутри каждого fold. Но прежние ошибки test уже влияли на разработку признаков, а validation использовался многократно. Поэтому test — retrospective benchmark. Этот запуск воспроизводит зафиксированную систему; независимую будущую точность он не доказывает."
+  },
+  {
+    "sceneId": "supervised",
+    "start": 120,
+    "duration": 20,
+    "title": "Supervised models and training-only CV",
+    "speaker": "Aslan",
+    "speakingSeconds": 50,
+    "notes": "Сохранены медианный baseline, Linear Regression, исходный KNN с 15 соседями и дерево глубины 10 с минимумом 3 объекта в листе. Для новых KNN, Tree и Random Forest используется одинаковая трёхфолдовая CV только внутри TRAIN, shuffle и seed 42. Критерий подбора — отрицательная MAE в тенге, то есть максимизация score эквивалентна минимизации ошибки.\n\nВыбраны KNN с 5 соседями, Manhattan distance и distance weighting; дерево глубины 10 с leaf size 3; RF с 200 деревьями, max_features 0,7 и leaf size 1. CV MAE леса около 2,17 млн. Разброс по folds — стандартное отклонение, не доверительный интервал. Сравниваются целые pipelines с различающимися признаками.",
+    "notesLanguage": "ru",
+    "notesEnglish": "We preserve the median predictor, linear regression, fifteen-neighbor distance-weighted KNN and the original depth-ten decision tree. The extended comparisons tune KNN, decision tree and random forest with the same three shuffled training folds and seed 42. The selection metric is negative MAE in tenge. Each search also selects the one-hot minimum category frequency from one, two or five. The winning KNN uses five neighbors, Manhattan distance and distance weighting. The tree uses depth ten and a minimum leaf size of three. Random forest uses two hundred trees, maximum feature fraction 0.7 and leaf size one. Its mean cross-validation MAE is 2.17 million tenge. The reported spread across folds is a standard deviation, not a confidence interval. Different predictor representations mean that these are complete-system comparisons.",
+    "sources": [
+      "Breiman, L. (2001). Random forests. Machine Learning, 45(1), 5–32. https://doi.org/10.1023/A:1010933404324",
+      "Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12, 2825–2830. https://www.jmlr.org/papers/v12/pedregosa11a.html",
+      "Evidence: ../code/results/knn_tuned_cv.csv; tree_tuned_cv.csv; random_forest_tuned_cv.csv; report.json, supervised.",
+      "Legacy controls keep original predictors. Tuned learners use enhanced inputs. This is a system comparison, not an isolated algorithm/tuning effect."
+    ],
+    "notesRU": "Сохранены медианный baseline, Linear Regression, исходный KNN с 15 соседями и дерево глубины 10 с минимумом 3 объекта в листе. Для новых KNN, Tree и Random Forest используется одинаковая трёхфолдовая CV только внутри TRAIN, shuffle и seed 42. Критерий подбора — отрицательная MAE в тенге, то есть максимизация score эквивалентна минимизации ошибки.\n\nВыбраны KNN с 5 соседями, Manhattan distance и distance weighting; дерево глубины 10 с leaf size 3; RF с 200 деревьями, max_features 0,7 и leaf size 1. CV MAE леса около 2,17 млн. Разброс по folds — стандартное отклонение, не доверительный интервал. Сравниваются целые pipelines с различающимися признаками."
+  },
+  {
+    "sceneId": "clusters",
+    "start": 140,
+    "duration": 20,
+    "title": "KMeans exploratory vehicle groups",
+    "speaker": "Alisher",
+    "speakingSeconds": 45,
+    "notes": "K-Means использует год, log пробега и очищенный объём двигателя. Из этой геометрии исключены 12 электрических TRAIN автомобилей: объём двигателя для них неприменим. В supervised learning они сохранены. Остаётся 1 775 строк.\n\nПосле TRAIN median imputation и StandardScaler проверены k от 2 до 8. Максимальный silhouette около 0,369 при k=4. Профили отражают относительно новые автомобили с небольшим пробегом, старые автомобили и различия объёма двигателя. Цена добавлена после fitting для описания групп. Категории марки/модели не участвуют; устойчивость кластеров отдельно не исследована. Поэтому это геометрические группы выбранных признаков.",
+    "notesLanguage": "ru",
+    "notesEnglish": "KMeans uses year, log mileage and cleaned displacement. We exclude twelve electric training listings only from displacement geometry, leaving 1,775 rows. We impute numeric medians and standardize these axes on training data. Price enters only after fitting to describe each group. Among k from two through eight, four has the highest silhouette, about 0.369. The groups broadly describe newer low-mileage vehicles, older vehicles, ordinary engine sizes and a larger-engine group. Their observed median prices differ, but the categories omit brand, model and equipment. KMeans provides interpretable centroids for this exploratory purpose. Its geometry and sensitivity to missingness or outliers mean these groups do not establish natural market segments. We have not claimed cluster stability.",
+    "sources": [
+      "Lloyd, S. P. (1982). Least squares quantization in PCM. IEEE Transactions on Information Theory, 28(2), 129–137. https://doi.org/10.1109/TIT.1982.1056489",
+      "Evidence: ../code/results/unsupervised_report.json; cluster_profiles.csv; cluster_selection.csv.",
+      "Training median imputation, StandardScaler, KMeans n_init=20 and seed42. Highest silhouette among k2–8 selects four. Twelve electric training rows remain in supervised models and are excluded only here. Price profiles use observed medians, not imputed centroids. Categories are omitted. No stability claim."
+    ],
+    "notesRU": "K-Means использует год, log пробега и очищенный объём двигателя. Из этой геометрии исключены 12 электрических TRAIN автомобилей: объём двигателя для них неприменим. В supervised learning они сохранены. Остаётся 1 775 строк.\n\nПосле TRAIN median imputation и StandardScaler проверены k от 2 до 8. Максимальный silhouette около 0,369 при k=4. Профили отражают относительно новые автомобили с небольшим пробегом, старые автомобили и различия объёма двигателя. Цена добавлена после fitting для описания групп. Категории марки/модели не участвуют; устойчивость кластеров отдельно не исследована. Поэтому это геометрические группы выбранных признаков."
+  },
+  {
+    "sceneId": "pca",
+    "start": 160,
+    "duration": 20,
+    "title": "PCA retains 80.13% in two dimensions",
+    "speaker": "Alisher",
+    "speakingSeconds": 40,
+    "notes": "На экране все 1775 неэлектрических TRAIN-объявлений в координатах PC1, PC2 и PC3. Мышью можно вращать систему, колёсиком менять масштаб, Reset view возвращает исходный ракурс. В режиме P ракурс синхронизируется с аудиторией. Три компоненты сохраняют 100% дисперсии трёх входов; кнопка PC1 / PC2 показывает двумерную проекцию с 80,13%.\n\nPCA обучена на 1775 неэлектрических TRAIN-объявлениях. Три входа: год, log(1 + пробег) и объём двигателя. Пропуски заполнены TRAIN-медианами, затем признаки стандартизованы на TRAIN. Цвета — группы KMeans, обученные в исходном пространстве этих трёх входов. Обучены три компоненты. PC1 объясняет 47,67%, PC2 — 32,46%, вместе 80,13%. В режиме PC1 / PC2 оставлены две; потеря составляет 19,87% вариации этих входов.\n\nPC1 противопоставляет более новый год большему пробегу. PC2 главным образом связан с объёмом двигателя. Loadings здесь — коэффициенты единичных направлений, а не корреляции. Знак компоненты может поменяться без изменения смысла. PCA помогает увидеть структуру; её explained variance не означает долю объяснённой цены или улучшение регрессии.",
+    "notesLanguage": "ru",
+    "notesEnglish": "PCA uses exactly the same imputed and standardized three numeric inputs. The first component explains 47.67 percent of variance, and the second adds 32.46 percent. The two-dimensional view therefore retains 80.13 percent and loses 19.87 percent. PC1 contrasts newer vehicles with lower mileage, while PC2 mainly follows engine size. The displayed coefficients are signed unit component directions, not feature-component correlations. Their signs can reverse without changing the analysis. We use PCA to summarize the input geometry and display clusters. Neither this variance result nor visual cluster separation shows that PCA improves price prediction. Price remains outside both PCA and KMeans fitting.",
+    "sources": [
+      "Jolliffe, I. T., & Cadima, J. (2016). Principal component analysis: A review and recent developments. Philosophical Transactions of the Royal Society A, 374(2065), 20150202. https://doi.org/10.1098/rsta.2015.0202",
+      "Evidence: ../code/results/pca_variance.csv; pca_loadings.csv; pca_scatter.png; unsupervised_report.json.",
+      "Variance shares: .4766627967, .3246389711, .1986982322. Cumulative PC1+PC2=.8013017678. Component coefficients are unit directions, not correlations. Signs are arbitrary. Price does not enter fitting."
+    ],
+    "notesRU": "На экране все 1775 неэлектрических TRAIN-объявлений в координатах PC1, PC2 и PC3. Мышью можно вращать систему, колёсиком менять масштаб, Reset view возвращает исходный ракурс. В режиме P ракурс синхронизируется с аудиторией. Три компоненты сохраняют 100% дисперсии трёх входов; кнопка PC1 / PC2 показывает двумерную проекцию с 80,13%.\n\nPCA обучена на 1775 неэлектрических TRAIN-объявлениях. Три входа: год, log(1 + пробег) и объём двигателя. Пропуски заполнены TRAIN-медианами, затем признаки стандартизованы на TRAIN. Цвета — группы KMeans, обученные в исходном пространстве этих трёх входов. Обучены три компоненты. PC1 объясняет 47,67%, PC2 — 32,46%, вместе 80,13%. В режиме PC1 / PC2 оставлены две; потеря составляет 19,87% вариации этих входов.\n\nPC1 противопоставляет более новый год большему пробегу. PC2 главным образом связан с объёмом двигателя. Loadings здесь — коэффициенты единичных направлений, а не корреляции. Знак компоненты может поменяться без изменения смысла. PCA помогает увидеть структуру; её explained variance не означает долю объяснённой цены или улучшение регрессии."
+  },
+  {
+    "sceneId": "ann",
+    "start": 180,
+    "duration": 20,
+    "title": "Feedforward ANN and learning curves",
+    "speaker": "Aslan",
+    "speakingSeconds": 60,
+    "notes": "ANN — feedforward MLP с ReLU в скрытых слоях и линейным выходом. Adam, learning rate 0,001, L2 alpha 0,001, batch 64. Target — стандартизованный log1p цены. После inverse transform прогноз оценивается в тенге. Loss при обучении в log scale и MAE в деньгах — разные цели.\n\nСравниваются архитектуры 64–32 и 128–64. Большая сеть выбрана по минимальной validation MAE на эпохе 71. Всего 111 эпох: после лучшей ещё 40 без улучшения, затем остановка с восстановлением checkpoint.\n\nTrain MAE выбранного checkpoint — 0,768 млн, validation MAE — 2,371 млн. Разрыв существенный. Условный сигнал ухудшения validation более чем на 5% не сработал: ухудшение около 2,50%. Это не доказательство отсутствия overfitting. Истории обеих архитектур сохранены.",
+    "notesLanguage": "ru",
+    "notesEnglish": "The single ANN is a feedforward multilayer perceptron. It uses ReLU hidden layers, a linear output and Adam with learning rate 0.001. The training target is standardized log-one-plus price. Predictions return to tenge before evaluation. We compare sixty-four by thirty-two and one-hundred-twenty-eight by sixty-four hidden units on the corrected vehicle inputs. The larger network reaches its lowest validation MAE at epoch seventy-one and stops after one-hundred-eleven epochs because the forty-epoch patience expires. At that checkpoint, training MAE is 0.768 million tenge and validation MAE is 2.371 million. The loss curves show a substantial generalization gap. The final validation MAE worsens by only 2.50 percent from the checkpoint, so the specific five-percent deterioration heuristic does not trigger. That does not mean the model cannot overfit. The selected estimator restores the best validation checkpoint, and the report retains both histories.",
+    "sources": [
+      "Kingma, D. P., & Ba, J. (2015). Adam: A method for stochastic optimization. ICLR. https://arxiv.org/abs/1412.6980",
+      "Evidence: ../code/results/ann_history.csv; ../code/results/report.json, ann. Both fixed architectures (64,32) and (128,64) use corrected predictors with OHE minimum frequency2.",
+      "Selected checkpoint train MSE .0222064166 vs validation .1876903007. Training MAE767821.8882 vs validation2371127.8044 KZT. Final validation MAE is2.5029% above best. The custom >5% deterioration heuristic returns false, not proof of absence of overfitting. Loss plotted is ordinary MSE without L2/optimizer half-factor."
+    ],
+    "notesRU": "ANN — feedforward MLP с ReLU в скрытых слоях и линейным выходом. Adam, learning rate 0,001, L2 alpha 0,001, batch 64. Target — стандартизованный log1p цены. После inverse transform прогноз оценивается в тенге. Loss при обучении в log scale и MAE в деньгах — разные цели.\n\nСравниваются архитектуры 64–32 и 128–64. Большая сеть выбрана по минимальной validation MAE на эпохе 71. Всего 111 эпох: после лучшей ещё 40 без улучшения, затем остановка с восстановлением checkpoint.\n\nTrain MAE выбранного checkpoint — 0,768 млн, validation MAE — 2,371 млн. Разрыв существенный. Условный сигнал ухудшения validation более чем на 5% не сработал: ухудшение около 2,50%. Это не доказательство отсутствия overfitting. Истории обеих архитектур сохранены."
+  },
+  {
+    "sceneId": "comparison",
+    "start": 200,
+    "duration": 20,
+    "title": "Complete same-split model comparison",
+    "speaker": "Aslan",
+    "speakingSeconds": 65,
+    "notes": "График содержит все девять моделей и одинаковые validation/test ID. Признаки различаются, поэтому нельзя приписать всю разницу только алгоритму. Ансамбль имеет минимальную test MAE: 1,635 млн тенге, на 72,53% ниже медианы и на 33,09% ниже исходного KNN.\n\nТюнинг не гарантирует улучшения: новые KNN и Tree на историческом test хуже исходных по MAE. Одиночная ANN лучше ансамбля по RMSE и R², а RF — по median APE. Основная цель проекта — MAE, поэтому сохранён ансамбль.\n\nValidation содержит объявление за 222 млн, максимум test — 93,5 млн. Разница хвостов влияет на RMSE и R²: у ансамбля validation R² около 0,391, test около 0,917. Это требует осторожной интерпретации и независимой проверки, а не вывода о гарантированной рыночной точности.\n\nЭто ретроспективное сравнение: исторический test уже использовался в разработке, поэтому он не является новой независимой проверкой. Сохранён ранее выбранный замороженный рецепт ансамбля; нового поиска по test не проводилось.\n\nРецепт сохранённого ансамбля: 0.25 × usage-MAE pool + 0.75 × (0.75 × corrected-dual pool + 0.25 × random forest), суммарно десять нейросетей и RF. В этом запуске веса не подбирались заново.",
+    "notesLanguage": "ru",
+    "notesEnglish": "This table keeps every reported contender, including negative results. All models use the same validation and historical-test IDs, but the predictor representation differs. The frozen ensemble has the lowest historical-test MAE, 1.635 million tenge, which is 72.53 percent below the median baseline and 33.09 percent below the original KNN. The tuned KNN and tuned decision tree have worse historical-test MAE than their midterm controls. This demonstrates why tuning on training folds does not guarantee improvement on another sample. The single ANN actually has lower RMSE and higher R-squared than the ensemble. Random forest has a lower median percentage error. Therefore we select according to the retained MAE criterion rather than calling one system universally best. Every validation MAE exceeds its test MAE. The validation split contains an asking price of 222 million tenge, while the test maximum is 93.5 million. These unequal tails and the reused benchmark constrain interpretation.",
+    "sources": [
+      "Evidence: ../code/results/model_comparison.csv; all_validation_predictions.csv; all_test_predictions.csv; report.json, evaluation.",
+      "All nine reported models remain visible. Enhanced KNN/tree lose to legacy controls on historical test MAE. RF has lower median APE than the two ANN systems. Single ANN has best RMSE/R². Ensembled system uses .25 usage-MAE pool+.75(.75 corrected-dual pool+.25RF), ten networks plus RF.",
+      "Historical test policy: earlier benchmark feedback influenced engineering. No new blend search or test-based acceptance in this run. Validation maximum222m KZT vs test93.5m KZT; validation contains one >100m listing and test none."
+    ],
+    "notesRU": "График содержит все девять моделей и одинаковые validation/test ID. Признаки различаются, поэтому нельзя приписать всю разницу только алгоритму. Ансамбль имеет минимальную test MAE: 1,635 млн тенге, на 72,53% ниже медианы и на 33,09% ниже исходного KNN.\n\nТюнинг не гарантирует улучшения: новые KNN и Tree на историческом test хуже исходных по MAE. Одиночная ANN лучше ансамбля по RMSE и R², а RF — по median APE. Основная цель проекта — MAE, поэтому сохранён ансамбль.\n\nValidation содержит объявление за 222 млн, максимум test — 93,5 млн. Разница хвостов влияет на RMSE и R²: у ансамбля validation R² около 0,391, test около 0,917. Это требует осторожной интерпретации и независимой проверки, а не вывода о гарантированной рыночной точности.\n\nЭто ретроспективное сравнение: исторический test уже использовался в разработке, поэтому он не является новой независимой проверкой. Сохранён ранее выбранный замороженный рецепт ансамбля; нового поиска по test не проводилось.\n\nРецепт сохранённого ансамбля: 0.25 × usage-MAE pool + 0.75 × (0.75 × corrected-dual pool + 0.25 × random forest), суммарно десять нейросетей и RF. В этом запуске веса не подбирались заново."
+  },
+  {
+    "sceneId": "errors",
+    "start": 220,
+    "duration": 20,
+    "title": "Error concentrations and metric tradeoffs",
+    "speaker": "Aslan",
+    "speakingSeconds": 50,
+    "notes": "Ценовые границы 3,6 / 6,7 / 11,5 млн определены по TRAIN. На test в верхней группе MAE около 4,09 млн, в нижней 0,78 млн. Средний residual верхней группы положителен: actual минус prediction показывает недооценку.\n\nДля моделей автомобилей, которых не было в TRAIN, MAE 3,59 млн при 42 строках; при минимум пяти обучающих примерах — 1,33 млн. В электрической группе лишь три test автомобиля, поэтому её большая ошибка не даёт устойчивой общей оценки.\n\nТолько 224 из 383 прогнозов попадают в ±20% цены. Высокий R² не означает, что 92% отдельных прогнозов точны.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Price-group thresholds come from the training quartiles: 3.6, 6.7 and 11.5 million tenge. On the historical test, the highest price group has MAE 4.09 million, compared with 0.78 million in the lowest group. Its positive mean residual shows underprediction on average. Unseen vehicle models have MAE 3.59 million across forty-two listings, while models with at least five training examples have MAE 1.33 million. Only three electric test listings produce an electric-group MAE of 9.40 million, so strong population conclusions would be inappropriate. The largest error is an unseen Mercedes EQS SUV: actual fifty-eight million, predicted about thirty point two million. The ensemble places 224 of 383 predictions within twenty percent, which shows why a high R-squared does not imply individual pricing accuracy.",
+    "sources": [
+      "Evidence: ../code/results/error_by_price_band.csv; error_by_model_support.csv; error_by_fuel.csv; largest_errors.csv; selected_model_test_predictions.csv.",
+      "Residual is actual minus prediction. Highest price quartile n84, MAE4088491.0851, mean residual2056932.3958 KZT. Lowest quartile n112, MAE782632.4266 KZT. Largest error ad161795691: 58000000 actual vs30207666.6912 predicted."
+    ],
+    "notesRU": "Ценовые границы 3,6 / 6,7 / 11,5 млн определены по TRAIN. На test в верхней группе MAE около 4,09 млн, в нижней 0,78 млн. Средний residual верхней группы положителен: actual минус prediction показывает недооценку.\n\nДля моделей автомобилей, которых не было в TRAIN, MAE 3,59 млн при 42 строках; при минимум пяти обучающих примерах — 1,33 млн. В электрической группе лишь три test автомобиля, поэтому её большая ошибка не даёт устойчивой общей оценки.\n\nТолько 224 из 383 прогнозов попадают в ±20% цены. Высокий R² не означает, что 92% отдельных прогнозов точны."
+  },
+  {
+    "sceneId": "literature",
+    "start": 240,
+    "duration": 20,
+    "title": "Related work and the remaining gap",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 50,
+    "notes": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Alisher: Our literature review covers local vehicle-price research and studies from several other markets. Barlybayev and colleagues provide Kazakhstan precedent, while Gollapalli and colleagues compare linear and tree models in Saudi Arabia. Sharma and Mitra examine nonlinear relationships, and Bergmann and Feuerriegel show that detailed equipment information can matter. Aslan: Cui and colleagues study a more complex boosting and neural-network framework, which differs from our fixed average. Broader tabular benchmarks motivate retaining strong tree baselines alongside an MLP. Currency errors from these papers cannot be ranked against our scores because targets, samples and transformations differ. The remaining gap for this project is narrower: whether our ranking persists on genuinely new Kazakhstan listings with known sampling dates and adequate checks for repeated vehicles. The literature motivates this question but does not answer it.",
+    "sources": [
+      "Barlybayev, A., et al. (2023). Predicting used-vehicle resale value in developing markets. Ingénierie des Systèmes d’Information, 28(5), 1237–1246. https://doi.org/10.18280/isi.280512",
+      "Cui, B., et al. (2022). Used car price prediction based on the iterative framework of XGBoost+LightGBM. Electronics, 11(18),2932. https://doi.org/10.3390/electronics11182932",
+      "Gollapalli, M., et al. (2023). Intelligent modelling techniques for predicting used cars prices in Saudi Arabia. Mathematical Modelling of Engineering Problems,10(1),139–148. https://doi.org/10.18280/mmep.100115",
+      "Muti, S., & Yıldız, K. (2023). Using linear regression for used car price prediction. International Journal of Computational and Experimental Science and Engineering,9(1),11–16. https://doi.org/10.22399/ijcesen.1070505",
+      "Sharma, J., & Mitra, S. K. (2024). Developing a used car pricing model applying multivariate adaptive regression splines approach. Expert Systems with Applications,236,121277. https://doi.org/10.1016/j.eswa.2023.121277",
+      "Bergmann, S., & Feuerriegel, S. (2025). Machine learning for predicting used car resale prices using granular vehicle equipment information. Expert Systems with Applications,263,125640. https://doi.org/10.1016/j.eswa.2024.125640",
+      "Grinsztajn, L., Oyallon, E., & Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? NeurIPS35,507–520. https://doi.org/10.52202/068431-0037",
+      "Different asking-price and sales targets, country/currency, dates, samples, exclusions and target transforms prevent ranking our currency errors against these papers."
+    ],
+    "notesRU": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана."
+  },
+  {
+    "sceneId": "proposal",
+    "start": 260,
+    "duration": 20,
+    "title": "Proposed independent follow-up study",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 55,
+    "notes": "**Алишер:** Это план будущей работы. Исходный датасет остаётся development data. Нужен независимый снимок с записанными датами и разрешённым способом получения. Ориентир 800–1 200 уникальных подходящих объявлений — организационная цель, не расчёт статистической мощности. До оценки фиксируются правила отбора и проверки повторных автомобилей.\n\n**Аслан:** До просмотра независимых цен замораживаются модели, преобразования и основная проверка разницы MAE ансамбля и медианы. Сравниваются сохранённые ансамбль, одиночная ANN, RF и медианный baseline на одинаковых новых строках. Историческая таблица девяти моделей остаётся отдельно. Новый тюнинг — отдельный development-эксперимент. Далее bootstrap по группам автомобилей при надёжной идентификации, counts подгрупп и анализ distribution shift. План на шесть недель: протокол и разрешения; две недели сбора и проверки; фиксация и оценка; неопределённость; отчёт. Отсутствие убедительного преимущества ансамбля тоже будет результатом.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Alisher: This is proposed future work. The original dataset remains development evidence. If lawful dated access is available, the target is roughly 800 to 1,200 distinct later listings. This is a feasibility range, not a power calculation. We check advertisement IDs and permitted vehicle linkage across samples. If grouping is unreliable, we state the remaining dependence risk. Aslan: Before inspecting later outcomes, we archive the frozen ensemble, corrected ANN, Random Forest and training-median reference. These four comparators use identical eligible later IDs. The primary outcome is the paired MAE difference between ensemble and median reference. The historical nine-model comparison stays separate. Any changed blend, retraining or tuning is a separately labeled exploratory method. We bootstrap vehicle groups if reliable linkage permits and report subgroup counts and limitations. The six-week plan confirms access in week one, collects and audits in weeks two and three, executes frozen predictions in week four, analyzes uncertainty in week five, and reports in week six. A negative result remains informative.",
+    "sources": [
+      "Proposal derives from project evaluation limitations and the verified research memo. Dataset, fitted model recipe and historical benchmark remain unchanged.",
+      "The prospective comparison includes frozen ensemble, corrected ANN, RF and median reference on identical new eligible IDs. Primary outcome is paired ensemble-minus-median MAE. The nine-model historical table stays separate. Any changed blend or tuning is secondary exploratory work. Bootstrap vehicle groups when linkage is reliable. Six-week plan matches report_source.md.",
+      "Leakage background: Kapoor & Narayanan (2023). https://doi.org/10.1016/j.patter.2023.100804"
+    ],
+    "notesRU": "**Алишер:** Это план будущей работы. Исходный датасет остаётся development data. Нужен независимый снимок с записанными датами и разрешённым способом получения. Ориентир 800–1 200 уникальных подходящих объявлений — организационная цель, не расчёт статистической мощности. До оценки фиксируются правила отбора и проверки повторных автомобилей.\n\n**Аслан:** До просмотра независимых цен замораживаются модели, преобразования и основная проверка разницы MAE ансамбля и медианы. Сравниваются сохранённые ансамбль, одиночная ANN, RF и медианный baseline на одинаковых новых строках. Историческая таблица девяти моделей остаётся отдельно. Новый тюнинг — отдельный development-эксперимент. Далее bootstrap по группам автомобилей при надёжной идентификации, counts подгрупп и анализ distribution shift. План на шесть недель: протокол и разрешения; две недели сбора и проверки; фиксация и оценка; неопределённость; отчёт. Отсутствие убедительного преимущества ансамбля тоже будет результатом."
+  },
+  {
+    "sceneId": "conclusion",
+    "start": 280,
+    "duration": 20,
+    "title": "Conclusions and contributions",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 25,
+    "notes": "Итог: MAE сохранённого ансамбля на историческом test — 1,635 млн тенге, на 72,53% ниже TRAIN-медианы. Это ретроспективное сравнение; для вывода о будущих данных нужна независимая проверка.\n\nАлишер: dataset sourcing, cleaning, feature engineering, EDA, K-Means and PCA. Аслан: supervised models, CV, ANN and ensemble, metrics, error analysis and reproducibility. Распределение ролей совпадает с endterm.",
+    "notesLanguage": "ru",
+    "notesEnglish": "The frozen ensemble meets the retrospective MAE criterion. The report explains the limitations and proposes an independent evaluation. Alisher's continuing responsibilities cover the data, EDA, K-Means and PCA. Aslan's cover the supervised models, neural network, comparison and reproducibility.",
+    "sources": [
+      "Evidence: ../code/results/report.json. Historical-test MAE: 1,634,563.56 KZT. Reduction from the training-median baseline: 72.53%.",
+      "Team responsibilities: ../README.md."
+    ],
+    "notesRU": "Итог: MAE сохранённого ансамбля на историческом test — 1,635 млн тенге, на 72,53% ниже TRAIN-медианы. Это ретроспективное сравнение; для вывода о будущих данных нужна независимая проверка.\n\nАлишер: dataset sourcing, cleaning, feature engineering, EDA, K-Means and PCA. Аслан: supervised models, CV, ANN and ensemble, metrics, error analysis and reproducibility. Распределение ролей совпадает с endterm."
+  },
+  {
+    "sceneId": "thanks",
+    "title": "Thank you! — extra live closing screen",
+    "start": 300,
+    "duration": 20,
+    "notes": "Завершение выступления и переход к вопросам.",
+    "notesRU": "Завершение выступления и переход к вопросам.",
+    "speakingSeconds": 0
+  }
+]
+  </script>
+<div class="cockpit-backplate" aria-hidden="true"></div>
+<div class="glass-shade" aria-hidden="true"></div>
+<div id="entry-transition" class="entry-transition" aria-hidden="true"><img src="../assets/car/parked.png" alt=""><div class="windshield-glint"></div></div>
+
+<section class="scene-frame cover-scene" data-scene-id="cover" data-composition-id="cover" data-start="0" data-duration="20" data-width="1920" data-height="1080" data-label="Used-car price prediction">
+  <video id="cover-film" class="cover-film" src="../assets/car/intro-titled.mp4" poster="../assets/car/parked.png" data-start="0" data-duration="10" muted playsinline preload="auto"></video>
+</section>
+
+<section class="scene-frame hud-scene question-scene" data-scene-id="question" data-composition-id="question" data-start="20" data-duration="20" data-width="1920" data-height="1080" data-label="Research question">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Research question</p><h1>Can specifications predict<br>the asking price?</h1></header>
+    <div class="question-flow" data-anim="none">
+      <div class="feature-list" aria-label="Example predictors"><span>Year</span><span>Mileage</span><span>Engine</span><span>Brand</span><span>Model</span></div>
+      <svg class="feature-routing" viewBox="0 0 1600 310" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><path class="signal-line" d="M260 36H370Q425 36 425 85V155H615"/><path class="signal-line" d="M260 95H460V155H615"/><path class="signal-line" d="M260 155H615"/><path class="signal-line" d="M260 215H460V155H615"/><path class="signal-line" d="M260 274H370Q425 274 425 225V155H615"/><path class="prediction-line" d="M960 155H1220"/></g><path class="arrow-tip" d="M1205 144L1220 155L1205 166" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <div class="model-node"><span class="node-orbit" aria-hidden="true"></span><span>Regression<br>model</span></div>
+      <div class="prediction-node"><span>Predicted</span><strong>asking price</strong><span>in KZT</span></div>
+    </div>
+    <div class="criterion" data-anim="none"><span>Success criterion</span><p><strong>≥20% lower MAE</strong><br>than a training-median predictor</p></div>
+    <p class="context-note" data-anim="none">Kazakhstan used-car listings · Dataset labelled 2025</p>
+  </div>
+</section>
+
+<section id="data" class="scene-frame hud-scene evidence-scene data-evidence" data-scene-id="data" data-composition-id="data" data-start="40" data-duration="20" data-width="1920" data-height="1080" data-label="Original data and cleaning">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">The original data</p><h1>3,999 advertisements → 2,553 used cars</h1></header>
+    <div class="ev-clean-flow" data-anim="none" aria-label="3999 source rows. Remove 527 new vehicles, then 51 used cars on order, then 868 repeated remaining ad IDs. Retain 2553 used-car listings.">
+      <div class="ev-clean-step"><strong>3,999</strong><p>Source rows</p><span>14 original columns</span></div>
+      <div class="ev-clean-step"><strong>3,472</strong><p>Used vehicles</p><span>−527 new vehicles</span></div>
+      <div class="ev-clean-step"><strong>3,421</strong><p>After order filter</p><span>−51 used cars on order</span></div>
+      <div class="ev-clean-step ev-clean-final"><strong>2,553</strong><p>Retained listings</p><span>−868 repeated-ID rows</span></div>
+      <svg class="ev-clean-route" viewBox="0 0 1620 34" aria-hidden="true"><path d="M0 17H1612"/><path d="M1600 6L1612 17L1600 28"/></svg>
+    </div>
+    <div class="ev-data-limits" data-anim="none">
+      <div class="ev-missing"><strong>497</strong><p>missing mileage values</p><span>Retained · Train-fitted imputation</span></div>
+      <div class="ev-source-limits"><p>Prices and difficult cases retained.</p><span>No ad dates, VIN or verified condition.<br>Different-ID relistings may remain.</span></div>
+    </div>
+    <p class="ev-bottom-note" data-anim="annotation">Kolesa-Cars-2025 · Kaggle version 1</p>
+  </div>
+</section>
+
+<section id="eda-price" class="scene-frame hud-scene evidence-scene price-evidence" data-scene-id="eda-price" data-composition-id="eda-price" data-start="60" data-duration="20" data-width="1920" data-height="1080" data-label="Price distribution and model year">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Exploratory analysis · 1 / 2</p><h1>Price has a long upper tail</h1></header>
+    <div class="ev-chart-pair" data-anim="none">
+      <figure class="ev-figure"><figcaption>Price distribution</figcaption><p class="ev-plot-scope">Training listings · n = 1,787</p><svg id="ev-price-chart" viewBox="0 0 780 330" role="img" aria-label="Counts in all six asking-price bands; every training listing included"></svg></figure>
+      <figure class="ev-figure"><figcaption>Price by model year</figcaption><p class="ev-plot-scope">1990–2025 · ≥8 training rows per year</p><svg id="ev-year-chart" viewBox="0 0 780 330" role="img" aria-label="36 observed yearly training medians, model years 1990 to 2025"></svg></figure>
+    </div>
+    <div class="ev-interpretations" data-anim="none"><p><strong>Mean 9.53m &gt; median 6.70m KZT.</strong></p><p><strong>Spearman ρ = 0.69</strong> · not causal</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">Training only · All asking prices retained</p>
+  </div>
+</section>
+
+<section id="eda-mileage" class="scene-frame hud-scene evidence-scene mileage-evidence" data-scene-id="eda-mileage" data-composition-id="eda-mileage" data-start="80" data-duration="20" data-width="1920" data-height="1080" data-label="Mileage scatter and fuel distributions">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Exploratory analysis · 2 / 2</p><h1>Mileage matters, with wide price variation</h1></header>
+    <div class="ev-chart-pair" data-anim="none">
+      <figure class="ev-figure"><figcaption>Observed mileage</figcaption><p class="ev-plot-scope">Fixed-seed training sample · n = 1,200</p><svg id="ev-mileage-chart" viewBox="0 0 780 330" role="img" aria-label="All 1200 saved training sample points, including mileage above one million kilometres and price up to 160 million KZT"></svg></figure>
+      <figure class="ev-figure"><figcaption>Price by fuel group</figcaption><p class="ev-plot-scope">All 1,787 training rows · Log price axis</p><svg id="ev-fuel-chart" viewBox="0 0 780 330" role="img" aria-label="Six exact fuel boxplots, with all outliers shown; 12 electric and 22 hybrid listings"></svg></figure>
+    </div>
+    <div class="ev-interpretations" data-anim="none"><p><strong>Spearman ρ = −0.53</strong> · wide spread</p><p><strong>Small groups</strong> · descriptive price gaps</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">Different vehicle mixes · All outliers shown · Box: middle 50% · Whiskers: 1.5 × IQR</p>
+  </div>
+</section>
+
+<section id="protocol" class="scene-frame hud-scene evidence-scene protocol-evidence" data-scene-id="protocol" data-composition-id="protocol" data-start="100" data-duration="20" data-width="1920" data-height="1080" data-label="Fitting protocol and evaluation limits">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Protocol and limits</p><h1>Clean fitting. A reused benchmark.</h1></header>
+    <div class="ev-split" data-anim="none" aria-label="1787 training, 383 validation, 383 historical test listings">
+      <div class="ev-split-part ev-train"><strong>1,787</strong><p>Training</p></div><div class="ev-split-part ev-validation"><strong>383</strong><p>Validation</p></div><div class="ev-split-part ev-test"><strong>383</strong><p>Historical test</p></div>
+      <svg class="ev-split-scale" viewBox="0 0 1620 8" aria-hidden="true"><path class="ev-split-line ev-train-line" d="M0 4H1133.936545241"/><path class="ev-split-line ev-val-line" d="M1133.936545241 4H1376.9682726205"/><path class="ev-split-line ev-test-line" d="M1376.9682726205 4H1620"/></svg>
+    </div>
+    <div class="ev-protocol-details" data-anim="none">
+      <div class="ev-fit-block"><h2>Fit only on training</h2><p>Imputation · scaling · one-hot encoding<br>Target transforms · refit each CV fold</p><span>Validation: ANN architecture + checkpoints.</span></div>
+      <div class="ev-semantics"><h2>Feature meanings</h2><p>Missing mileage ≠ zero<br>Electric engine size may not apply</p><span>Age / annual mileage are proxies.<br>Text claims ≠ verified condition.</span></div>
+    </div>
+    <div class="ev-protocol-caveat" data-anim="none"><span>Evaluation boundary</span><p>Prior test feedback shaped features; validation was reused.<br>Independent later data are needed.</p></div>
+    <p class="ev-bottom-note" data-anim="annotation">No ad ID crosses splits; relistings may remain · Kapoor &amp; Narayanan, 2023</p>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene supervised-scene" data-scene-id="supervised" data-composition-id="supervised" data-start="120" data-duration="20" data-width="1920" data-height="1080" data-label="Supervised training protocol">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Supervised learning</p><h1>Strong controls before complexity</h1></header>
+    <div class="m-supervised-body" data-anim="none">
+      <p class="m-protocol">3 shared shuffled training folds <span>Seed 42 · minimum mean MAE</span></p>
+      <div class="m-cv-head"><span>Tuned pipeline</span><span>CV MAE ± SD, m KZT</span><span>Selected configuration</span></div>
+      <div id="m-cv-lanes" class="m-cv-lanes"></div>
+    </div>
+    <div class="m-supervised-notes" data-anim="none"><p>Controls: median, linear, KNN (15),<br>tree (depth 10, leaf ≥3).</p><p>One-hot min frequency {1, 2, 5} tuned in CV.<br>Compare pipelines; fold SD is not a confidence interval.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene clusters-scene" data-scene-id="clusters" data-composition-id="clusters" data-start="140" data-duration="20" data-width="1920" data-height="1080" data-label="Exploratory KMeans clusters">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">K-means</p><h1>Four exploratory groups</h1></header>
+    <div class="m-cluster-layout" data-anim="none">
+      <figure class="m-cluster-selection"><figcaption>Highest training silhouette: <strong>k = 4</strong></figcaption><div id="m-silhouette"></div></figure>
+      <div class="m-profile-panel"><h2>Observed medians</h2><table class="m-profile-table"><thead><tr><th>Group</th><th>n</th><th>Year</th><th>Mileage<br>1,000 km</th><th>Engine<br>L</th><th>Price<br>m KZT</th></tr></thead><tbody id="m-cluster-profiles"></tbody></table></div>
+    </div>
+    <div class="m-cluster-notes" data-anim="none"><p>1,775 non-electric training rows · 12 EVs excluded only here.</p><p>Train imputation + scaling: year, log mileage, engine. Price added after fitting.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene pca3d-scene" data-scene-id="pca" data-composition-id="pca" data-start="160" data-duration="20" data-width="1920" data-height="1080" data-label="Interactive PCA geometry">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Three components</p><h1>Explore the PCA geometry</h1></header>
+    <div class="pca3d-layout" data-anim="none">
+      <div class="pca3d-plot">
+        <canvas id="pca-3d-canvas" width="2360" height="1020" tabindex="0" role="img" aria-label="Interactive three-dimensional PCA scores for all 1775 non-electric training listings. PC1, PC2 and PC3 use equal dimensionless units. Drag to rotate and use the wheel to zoom." aria-describedby="pca3d-hint pca3d-source"></canvas>
+        <p id="pca3d-view-label" class="pca3d-view-label" aria-live="polite">3D coordinate view</p>
+        <span class="pca3d-unit-label" aria-hidden="true">PCA scores · equal units</span>
+      </div>
+      <aside class="pca3d-controls" aria-label="PCA view controls">
+        <p class="pca3d-count">1,775</p>
+        <p class="pca3d-population">non-electric<br>TRAIN listings</p>
+        <p class="pca3d-variance" id="pca3d-variance">All 3 PCs · <strong>100%</strong><br>of input variance</p>
+        <div class="pca3d-legend" aria-label="K-means cluster colours"><span><i class="cluster-0"></i>Cluster 0</span><span><i class="cluster-1"></i>Cluster 1</span><span><i class="cluster-2"></i>Cluster 2</span><span><i class="cluster-3"></i>Cluster 3</span></div>
+        <div class="pca3d-view-switch" role="group" aria-label="PCA coordinate view"><button type="button" data-pca-view="3d" aria-pressed="true">3D space</button><button type="button" data-pca-view="2d" aria-pressed="false">PC1 / PC2</button></div>
+        <button type="button" class="pca3d-reset" id="pca3d-reset">Reset view</button>
+        <p class="pca3d-hint" id="pca3d-hint">Drag to rotate<br>Wheel to zoom</p>
+      </aside>
+    </div>
+    <p class="pca3d-source" id="pca3d-source">Train-standardized year, log mileage and engine size · Price excluded</p>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene ann-scene" data-scene-id="ann" data-composition-id="ann" data-start="180" data-duration="20" data-width="1920" data-height="1080" data-label="ANN learning curves and checkpoint">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Feedforward neural network</p><h1>A visible validation gap</h1></header>
+    <div class="m-ann-layout" data-anim="none">
+      <figure class="m-ann-figure"><figcaption>Ordinary standardized-log MSE</figcaption><div id="m-ann-curves"></div><div class="m-ann-legend"><span><i></i>Training</span><span><i></i>Validation</span><span>All 111 epochs</span></div></figure>
+      <aside class="m-ann-summary"><p class="m-ann-architecture">128 → 64 → 1</p><p class="m-ann-activations">ReLU · ReLU · linear</p><p class="m-ann-config">Adam · learning rate .001<br>Target: standardized log1p(price)</p><div class="m-ann-checkpoint"><span>Selected by validation MAE</span><strong id="m-ann-epoch">epoch 71</strong></div><div class="m-ann-maes"><p><span>Train MAE</span><strong id="m-ann-train">0.768</strong></p><p><span>Validation MAE</span><strong id="m-ann-val">2.371</strong></p></div><p class="m-ann-mae-unit">million KZT</p></aside>
+    </div>
+    <div class="m-ann-notes" data-anim="none"><p>Best checkpoint restored · stopped at 111 · patience 40 epochs.</p><p>Validation MAE +<strong id="m-ann-deterioration">2.50%</strong> from best; no 5% trigger. Overfitting remains possible.</p></div>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene comparison-scene" data-scene-id="comparison" data-composition-id="comparison" data-start="200" data-duration="20" data-width="1920" data-height="1080" data-label="Model comparison">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="title"><p class="section-name">Historical test · 383 listings</p><h1 id="comparison-heading">Lowest MAE: ANN ensemble</h1></header>
+    <div class="comparison-toolbar" data-anim="none"><span id="comparison-metric-note">Test error in million KZT · Lower is better</span><div class="metric-switch" role="group" aria-label="Compare error metric"><button type="button" data-metric="mae" aria-pressed="true">MAE</button><button type="button" data-metric="rmse" aria-pressed="false">RMSE</button><button type="button" data-metric="validation" aria-pressed="false">Val MAE</button><button type="button" data-metric="r2" aria-pressed="false">R²</button><button type="button" id="comparison-table-button" aria-pressed="false">Table</button></div></div>
+    <div class="comparison-chart" id="comparison-chart" data-anim="none" role="img" aria-label="Test error for all nine model pipelines"></div>
+    <table id="comparison-table" class="complete-comparison" hidden aria-label="All nine model pipelines on the same historical split"><thead><tr><th>System</th><th>Val MAE</th><th>Test MAE</th><th>Test RMSE</th><th>Test R²</th></tr></thead><tbody><tr><th scope="row">Median baseline</th><td>6.497</td><td>5.951</td><td>11.301</td><td>-0.048</td></tr><tr><th scope="row">Linear regression</th><td>4.647</td><td>3.499</td><td>6.465</td><td>0.657</td></tr><tr><th scope="row">KNN midterm</th><td>3.179</td><td>2.443</td><td>5.889</td><td>0.715</td></tr><tr><th scope="row">Tree midterm</th><td>3.436</td><td>2.459</td><td>5.485</td><td>0.753</td></tr><tr><th scope="row">KNN tuned</th><td>3.410</td><td>2.786</td><td>6.416</td><td>0.662</td></tr><tr><th scope="row">Tree tuned</th><td>3.364</td><td>2.535</td><td>6.207</td><td>0.684</td></tr><tr><th scope="row">Random forest tuned</th><td>2.697</td><td>2.068</td><td>4.968</td><td>0.797</td></tr><tr><th scope="row">Single ANN</th><td>2.371</td><td>1.736</td><td>3.135</td><td>0.919</td></tr><tr class="ensemble-row"><th scope="row">ANN ensemble</th><td>2.238</td><td>1.635</td><td>3.190</td><td>0.917</td></tr></tbody></table>
+    <p class="comparison-note context-note">Retrospective benchmark · Different feature pipelines · Frozen ensemble: 10 ANNs + RF</p>
+  </div>
+</section>
+
+<section class="scene-frame hud-scene methods-scene errors-scene" data-scene-id="errors" data-composition-id="errors" data-start="220" data-duration="20" data-width="1920" data-height="1080" data-label="Historical test error analysis">
+  <div class="windshield">
+    <header class="scene-heading" data-anim="none"><p class="section-name">Frozen ensemble · historical test</p><h1>High prices and unseen models are harder</h1></header>
+    <div class="m-error-layout" data-anim="none">
+      <figure><figcaption>Training-defined price quartiles</figcaption><p class="m-chart-subtitle">Cuts: 3.6 / 6.7 / 11.5 million KZT</p><div id="m-price-errors"></div></figure>
+      <figure><figcaption>Vehicle-model support in training</figcaption><p class="m-chart-subtitle">Historical test · 383 listings</p><div id="m-support-errors"></div></figure>
+    </div>
+    <div class="m-errors-summary" data-anim="none"><p><strong id="m-error-coverage">224 / 383</strong><span>within ±20% of asking price</span></p><p><strong id="m-error-electric">9.40m KZT</strong><span>Electric MAE · only n = 3</span></p><p><strong id="m-error-eqs">58.0m → 30.2m</strong><span>EQS SUV · asking → predicted KZT</span></p></div>
+    <p class="m-error-note" data-anim="none">Q4 mean residual <strong id="m-error-residual">+2.06m KZT</strong> (actual − predicted). Small groups remain descriptive.</p>
+  </div>
+</section>
+
+<section id="literature" class="scene-frame hud-scene literature-scene" data-scene-id="literature" data-composition-id="literature" data-start="240" data-duration="20" data-width="1920" data-height="1080" data-label="Related research and the gap">
+ <div class="windshield"><header class="scene-heading" data-anim="title"><p class="section-name">Related research</p><h1>Published evidence, then a new test</h1></header>
+ <div class="research-list"><div class="research-row" data-stage="0"><a href="https://doi.org/10.18280/isi.280512" target="_blank" rel="noopener" title="Barlybayev, A., Sankibayev, A., Kadyr, Y., Amangeldy, N., &amp; Sabyrov, T. (2023). Predicting used-vehicle resale value in developing markets: Application of machine learning models to the Kazakhstan car market. *Ingénierie des Systèmes d’Information, 28*(5), 1237–1246. https://doi.org/10.18280/isi.280512">Barlybayev et al. (2023)</a><p><strong>Kazakhstan precedent</strong><span>Multiple model families on local Kolesa listings.</span></p></div><div class="research-row" data-stage="0"><a href="https://doi.org/10.18280/mmep.100115" target="_blank" rel="noopener" title="Gollapalli, M., Alqahtani, T. A., Alhamed, D. H., Alnassar, M. R., Alajmi, A. M., Alali, Y. H., Abdulqader, M. M., &amp; Saadeldeen, A. (2023). Intelligent modelling techniques for predicting used cars prices in Saudi Arabia. *Mathematical Modelling of Engineering Problems, 10*(1), 139–148. https://doi.org/10.18280/mmep.100115">Gollapalli et al. (2023)</a><p><strong>Evidence across markets</strong><span>Linear and tree models on Saudi listings.</span></p></div><div class="research-row" data-stage="1"><a href="https://doi.org/10.1016/j.eswa.2023.121277" target="_blank" rel="noopener" title="Sharma, J., &amp; Mitra, S. K. (2024). Developing a used car pricing model applying multivariate adaptive regression splines approach. *Expert Systems with Applications, 236*, Article 121277. https://doi.org/10.1016/j.eswa.2023.121277">Sharma &amp; Mitra (2024)</a><p><strong>Nonlinear relationships</strong><span>Multivariate adaptive regression splines.</span></p></div><div class="research-row" data-stage="1"><a href="https://doi.org/10.1016/j.eswa.2024.125640" target="_blank" rel="noopener" title="Bergmann, S., &amp; Feuerriegel, S. (2025). Machine learning for predicting used car resale prices using granular vehicle equipment information. *Expert Systems with Applications, 263*, Article 125640. https://doi.org/10.1016/j.eswa.2024.125640">Bergmann &amp; Feuerriegel (2025)</a><p><strong>More detailed inputs</strong><span>Granular vehicle equipment information.</span></p></div><div class="research-row" data-stage="2"><a href="https://doi.org/10.3390/electronics11182932" target="_blank" rel="noopener" title="Cui, B., Ye, Z., Zhao, H., Renqing, Z., Meng, L., &amp; Yang, Y. (2022). Used car price prediction based on the iterative framework of XGBoost+LightGBM. *Electronics, 11*(18), Article 2932. https://doi.org/10.3390/electronics11182932">Cui et al. (2022)</a><p><strong>A different hybrid design</strong><span>Iterative boosting / neural framework.</span></p></div><div class="research-row" data-stage="2"><a href="https://doi.org/10.52202/068431-0037" target="_blank" rel="noopener" title="Grinsztajn, L., Oyallon, E., &amp; Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? *Advances in Neural Information Processing Systems, 35*, 507–520. https://doi.org/10.52202/068431-0037">Grinsztajn et al. (2022)</a><p><strong>Strong tabular controls</strong><span>Tree baselines alongside neural networks.</span></p></div></div><div class="research-gap" data-anim="annotation"><span>Open question</span><p>Does our ranking persist on new, dated Kazakhstan listings?</p></div><p class="research-limit">Different datasets and currencies prevent direct score rankings. <a href="../references.html" target="_blank" rel="noopener">Full APA bibliography</a> accompanies the report.</p></div>
+</section>
+
+<section id="proposal" class="scene-frame hud-scene proposal-scene" data-scene-id="proposal" data-composition-id="proposal" data-start="260" data-duration="20" data-width="1920" data-height="1080" data-label="Proposed independent follow-up">
+ <div class="windshield"><header class="scene-heading" data-anim="title"><p class="section-name">Future study · not completed</p><h1>A six-week independent follow-up</h1></header>
+ <div class="proposal-scope" data-anim="none"><div data-stage="0"><p class="later-count">800–1,200</p><p class="later-label">distinct later listings</p><p class="scope-note">Feasibility target, if access permits.</p></div><div class="frozen-methods" data-stage="1"><p class="minor-heading">Freeze before evaluation</p><p>Ensemble · single ANN<br>Random forest · training median</p><span>Same eligible listings for all four.</span></div></div>
+ <div class="proposal-outcome" data-stage="2"><span>Paired MAE difference</span><p>MAE(ensemble) − MAE(training median)</p><small>Vehicle-group bootstrap if linkage is reliable.</small></div>
+ <div class="study-weeks" data-anim="none"><div data-stage="0"><b>1</b><span>Access and<br>protocol</span></div><div class="week-pair" data-stage="1"><b>2–3</b><span>Collect<br>and audit</span></div><div data-stage="2"><b>4</b><span>Frozen<br>predictions</span></div><div data-stage="2"><b>5</b><span>Uncertainty<br>and shift</span></div><div data-stage="2"><b>6</b><span>Report<br>all outcomes</span></div></div>
+ <p class="proposal-boundary" data-anim="annotation">New training or tuning is exploratory.</p></div>
+</section>
+
+<section id="conclusion" class="scene-frame exterior-scene conclusion-scene" data-scene-id="conclusion" data-composition-id="conclusion" data-start="280" data-duration="20" data-width="1920" data-height="1080" data-label="Results and team">
+ <img class="outro-wide" src="../assets/car-finale-v3/neutral.png" alt="Porsche 911 GT3 R, returning to the opening camera view">
+ <div class="exterior-results" data-anim="none"><p class="section-name">Results and team</p><h1>Historical test MAE</h1><div class="exterior-numbers"><strong>1.635<span> million KZT</span></strong><p><b>72.53%</b><span>below the training-median baseline</span></p></div></div>
+ <div class="exterior-roles" data-anim="none"><div><h2>Alisher Akhmet</h2><p>Dataset sourcing, cleaning, feature engineering,<br>EDA, K-Means and PCA</p></div><div><h2>Aslan Muratov</h2><p>Supervised models, CV, ANN and ensemble,<br>metrics, error analysis and reproducibility</p></div></div>
+</section>
+
+<section id="thanks" class="scene-frame exterior-scene thanks-scene" data-scene-id="thanks" data-composition-id="thanks" data-start="300" data-duration="20" data-width="1920" data-height="1080" data-label="Thank you!">
+ <video id="thanks-film" class="outro-wide thanks-film" src="../assets/car-finale-v7/closing.mp4" poster="../assets/car-finale-v3/neutral.png" data-start="300" data-duration="5.066667" data-pass-start-frame="59" data-pass-end-frame="131" data-pass-fps="30" data-rear-start="-929.9999" data-rear-step="40.694444" data-light-end="1.8" muted playsinline preload="auto" aria-hidden="true"></video>
+ <div class="thanks-whiteout" aria-hidden="true"></div><h1 id="thanks-title" class="thanks-title">THANK YOU!</h1>
+</section>
+
+  <script src="runtime.js"></script>
+  <script src="hud.js"></script>
+  <script src="evidence.js"></script>
+  <script src="methods.js"></script>
+  <script src="pca-3d.js"></script>
+  <script src="finale-type.js"></script>
+  <script src="cinematic.js"></script>
+</body>
+</html>

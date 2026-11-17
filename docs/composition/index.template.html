@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <title>ML Final — Cockpit Presentation Composition</title>
+  <style>
+    html,body {width:1920px;height:1080px;margin:0;overflow:hidden;}
+    body {position:relative;background:#080d12;}
+    .scene-frame {position:absolute;inset:0;width:1920px;height:1080px;opacity:0;visibility:hidden;pointer-events:none;}
+    .scene-frame[data-active="true"] {opacity:1;visibility:visible;pointer-events:auto;}
+  </style>
+  <link rel="stylesheet" href="styles.css">
+{{EXTRA_STYLES}}
+  <script src="../assets/vendor/gsap.min.js"></script>
+{{DATA_SCRIPTS}}
+</head>
+<body>
+  <script type="application/hyperframes-slideshow+json">
+{{SLIDESHOW_ISLAND}}
+  </script>
+  <script id="pilot-scene-manifest" type="application/json">
+{{SCENE_MANIFEST}}
+  </script>
+{{SLIDES}}
+  <script src="runtime.js"></script>
+{{HUD_SCRIPT}}
+</body>
+</html>

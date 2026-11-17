@@ -1,0 +1,52 @@
+{
+  "rows": 1787,
+  "join": "ad_id, one-to-one; split_manifest split == train",
+  "files": [
+    {
+      "path": "../code/dataset/used_cars_enriched.csv",
+      "sha256": "bc74eb9005ceb5aab616ca6066812f0875769288e29a4c9f469f377b44adb86e"
+    },
+    {
+      "path": "../code/results/split_manifest.csv",
+      "sha256": "81b60d1c3aa9d1c56e6d421c32e9668d376c710ff36fdedce871ed57f6644efb"
+    }
+  ],
+  "fuelGroups": [
+    {
+      "fuel": "diesel",
+      "n": 77,
+      "outliers": 6
+    },
+    {
+      "fuel": "gas_petrol",
+      "n": 74,
+      "outliers": 3
+    },
+    {
+      "fuel": "petrol",
+      "n": 1578,
+      "outliers": 103
+    },
+    {
+      "fuel": "gas",
+      "n": 24,
+      "outliers": 5
+    },
+    {
+      "fuel": "electric",
+      "n": 12,
+      "outliers": 3
+    },
+    {
+      "fuel": "hybrid",
+      "n": 22,
+      "outliers": 1
+    }
+  ],
+  "cautions": [
+    "Asking prices, not verified transactions.",
+    "Fuel groups have different vehicle mixes; group gaps are descriptive.",
+    "No winsorization, omitted groups or outlier clipping.",
+    "497 missing mileage values refer to all 2553 retained rows; 349 occur in training."
+  ]
+}
