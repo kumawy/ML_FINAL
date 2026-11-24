@@ -200,30 +200,8 @@
     "notesRU": "Ценовые границы 3,6 / 6,7 / 11,5 млн определены по TRAIN. На test в верхней группе MAE около 4,09 млн, в нижней 0,78 млн. Средний residual верхней группы положителен: actual минус prediction показывает недооценку.\n\nДля моделей автомобилей, которых не было в TRAIN, MAE 3,59 млн при 42 строках; при минимум пяти обучающих примерах — 1,33 млн. В электрической группе лишь три test автомобиля, поэтому её большая ошибка не даёт устойчивой общей оценки.\n\nТолько 224 из 383 прогнозов попадают в ±20% цены. Высокий R² не означает, что 92% отдельных прогнозов точны."
   },
   {
-    "sceneId": "literature",
-    "start": 240,
-    "duration": 20,
-    "title": "Related work and the remaining gap",
-    "speaker": "Alisher and Aslan",
-    "speakingSeconds": 50,
-    "notes": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана.",
-    "notesLanguage": "ru",
-    "notesEnglish": "Alisher: Our literature review covers local vehicle-price research and studies from several other markets. Barlybayev and colleagues provide Kazakhstan precedent, while Gollapalli and colleagues compare linear and tree models in Saudi Arabia. Sharma and Mitra examine nonlinear relationships, and Bergmann and Feuerriegel show that detailed equipment information can matter. Aslan: Cui and colleagues study a more complex boosting and neural-network framework, which differs from our fixed average. Broader tabular benchmarks motivate retaining strong tree baselines alongside an MLP. Currency errors from these papers cannot be ranked against our scores because targets, samples and transformations differ. The remaining gap for this project is narrower: whether our ranking persists on genuinely new Kazakhstan listings with known sampling dates and adequate checks for repeated vehicles. The literature motivates this question but does not answer it.",
-    "sources": [
-      "Barlybayev, A., et al. (2023). Predicting used-vehicle resale value in developing markets. Ingénierie des Systèmes d’Information, 28(5), 1237–1246. https://doi.org/10.18280/isi.280512",
-      "Cui, B., et al. (2022). Used car price prediction based on the iterative framework of XGBoost+LightGBM. Electronics, 11(18),2932. https://doi.org/10.3390/electronics11182932",
-      "Gollapalli, M., et al. (2023). Intelligent modelling techniques for predicting used cars prices in Saudi Arabia. Mathematical Modelling of Engineering Problems,10(1),139–148. https://doi.org/10.18280/mmep.100115",
-      "Muti, S., & Yıldız, K. (2023). Using linear regression for used car price prediction. International Journal of Computational and Experimental Science and Engineering,9(1),11–16. https://doi.org/10.22399/ijcesen.1070505",
-      "Sharma, J., & Mitra, S. K. (2024). Developing a used car pricing model applying multivariate adaptive regression splines approach. Expert Systems with Applications,236,121277. https://doi.org/10.1016/j.eswa.2023.121277",
-      "Bergmann, S., & Feuerriegel, S. (2025). Machine learning for predicting used car resale prices using granular vehicle equipment information. Expert Systems with Applications,263,125640. https://doi.org/10.1016/j.eswa.2024.125640",
-      "Grinsztajn, L., Oyallon, E., & Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? NeurIPS35,507–520. https://doi.org/10.52202/068431-0037",
-      "Different asking-price and sales targets, country/currency, dates, samples, exclusions and target transforms prevent ranking our currency errors against these papers."
-    ],
-    "notesRU": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана."
-  },
-  {
     "sceneId": "proposal",
-    "start": 260,
+    "start": 240,
     "duration": 20,
     "title": "Proposed independent follow-up study",
     "speaker": "Alisher and Aslan",
@@ -240,7 +218,7 @@
   },
   {
     "sceneId": "conclusion",
-    "start": 280,
+    "start": 260,
     "duration": 20,
     "title": "Conclusions and contributions",
     "speaker": "Alisher and Aslan",
@@ -257,7 +235,7 @@
   {
     "sceneId": "thanks",
     "title": "Thank you! — extra live closing screen",
-    "start": 300,
+    "start": 280,
     "duration": 20,
     "notes": "Завершение выступления и переход к вопросам.",
     "notesRU": "Завершение выступления и переход к вопросам.",
