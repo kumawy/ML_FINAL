@@ -100,22 +100,28 @@
       "endTime": 240
     },
     {
-      "sceneId": "proposal",
-      "notes": "**Алишер:** Это план будущей работы. Исходный датасет остаётся development data. Нужен независимый снимок с записанными датами и разрешённым способом получения. Ориентир 800–1 200 уникальных подходящих объявлений — организационная цель, не расчёт статистической мощности. До оценки фиксируются правила отбора и проверки повторных автомобилей.\n\n**Аслан:** До просмотра независимых цен замораживаются модели, преобразования и основная проверка разницы MAE ансамбля и медианы. Сравниваются сохранённые ансамбль, одиночная ANN, RF и медианный baseline на одинаковых новых строках. Историческая таблица девяти моделей остаётся отдельно. Новый тюнинг — отдельный development-эксперимент. Далее bootstrap по группам автомобилей при надёжной идентификации, counts подгрупп и анализ distribution shift. План на шесть недель: протокол и разрешения; две недели сбора и проверки; фиксация и оценка; неопределённость; отчёт. Отсутствие убедительного преимущества ансамбля тоже будет результатом.",
+      "sceneId": "literature",
+      "notes": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана.",
       "startTime": 240,
       "endTime": 260
     },
     {
-      "sceneId": "conclusion",
-      "notes": "Итог: MAE сохранённого ансамбля на историческом test — 1,635 млн тенге, на 72,53% ниже TRAIN-медианы. Это ретроспективное сравнение; для вывода о будущих данных нужна независимая проверка.\n\nАлишер: dataset sourcing, cleaning, feature engineering, EDA, K-Means and PCA. Аслан: supervised models, CV, ANN and ensemble, metrics, error analysis and reproducibility. Распределение ролей совпадает с endterm.",
+      "sceneId": "proposal",
+      "notes": "**Алишер:** Это план будущей работы. Исходный датасет остаётся development data. Нужен независимый снимок с записанными датами и разрешённым способом получения. Ориентир 800–1 200 уникальных подходящих объявлений — организационная цель, не расчёт статистической мощности. До оценки фиксируются правила отбора и проверки повторных автомобилей.\n\n**Аслан:** До просмотра независимых цен замораживаются модели, преобразования и основная проверка разницы MAE ансамбля и медианы. Сравниваются сохранённые ансамбль, одиночная ANN, RF и медианный baseline на одинаковых новых строках. Историческая таблица девяти моделей остаётся отдельно. Новый тюнинг — отдельный development-эксперимент. Далее bootstrap по группам автомобилей при надёжной идентификации, counts подгрупп и анализ distribution shift. План на шесть недель: протокол и разрешения; две недели сбора и проверки; фиксация и оценка; неопределённость; отчёт. Отсутствие убедительного преимущества ансамбля тоже будет результатом.",
       "startTime": 260,
       "endTime": 280
     },
     {
+      "sceneId": "conclusion",
+      "notes": "Итог: MAE сохранённого ансамбля на историческом test — 1,635 млн тенге, на 72,53% ниже TRAIN-медианы. Это ретроспективное сравнение; для вывода о будущих данных нужна независимая проверка.\n\nАлишер: dataset sourcing, cleaning, feature engineering, EDA, K-Means and PCA. Аслан: supervised models, CV, ANN and ensemble, metrics, error analysis and reproducibility. Распределение ролей совпадает с endterm.",
+      "startTime": 280,
+      "endTime": 300
+    },
+    {
       "sceneId": "thanks",
       "notes": "Завершение выступления и переход к вопросам.",
-      "startTime": 280,
-      "endTime": 300,
+      "startTime": 300,
+      "endTime": 320,
       "autoplay": true
     }
   ]
@@ -324,8 +330,30 @@
     "notesRU": "Ценовые границы 3,6 / 6,7 / 11,5 млн определены по TRAIN. На test в верхней группе MAE около 4,09 млн, в нижней 0,78 млн. Средний residual верхней группы положителен: actual минус prediction показывает недооценку.\n\nДля моделей автомобилей, которых не было в TRAIN, MAE 3,59 млн при 42 строках; при минимум пяти обучающих примерах — 1,33 млн. В электрической группе лишь три test автомобиля, поэтому её большая ошибка не даёт устойчивой общей оценки.\n\nТолько 224 из 383 прогнозов попадают в ±20% цены. Высокий R² не означает, что 92% отдельных прогнозов точны."
   },
   {
-    "sceneId": "proposal",
+    "sceneId": "literature",
     "start": 240,
+    "duration": 20,
+    "title": "Related work and the remaining gap",
+    "speaker": "Alisher and Aslan",
+    "speakingSeconds": 50,
+    "notes": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана.",
+    "notesLanguage": "ru",
+    "notesEnglish": "Alisher: Our literature review covers local vehicle-price research and studies from several other markets. Barlybayev and colleagues provide Kazakhstan precedent, while Gollapalli and colleagues compare linear and tree models in Saudi Arabia. Sharma and Mitra examine nonlinear relationships, and Bergmann and Feuerriegel show that detailed equipment information can matter. Aslan: Cui and colleagues study a more complex boosting and neural-network framework, which differs from our fixed average. Broader tabular benchmarks motivate retaining strong tree baselines alongside an MLP. Currency errors from these papers cannot be ranked against our scores because targets, samples and transformations differ. The remaining gap for this project is narrower: whether our ranking persists on genuinely new Kazakhstan listings with known sampling dates and adequate checks for repeated vehicles. The literature motivates this question but does not answer it.",
+    "sources": [
+      "Barlybayev, A., et al. (2023). Predicting used-vehicle resale value in developing markets. Ingénierie des Systèmes d’Information, 28(5), 1237–1246. https://doi.org/10.18280/isi.280512",
+      "Cui, B., et al. (2022). Used car price prediction based on the iterative framework of XGBoost+LightGBM. Electronics, 11(18),2932. https://doi.org/10.3390/electronics11182932",
+      "Gollapalli, M., et al. (2023). Intelligent modelling techniques for predicting used cars prices in Saudi Arabia. Mathematical Modelling of Engineering Problems,10(1),139–148. https://doi.org/10.18280/mmep.100115",
+      "Muti, S., & Yıldız, K. (2023). Using linear regression for used car price prediction. International Journal of Computational and Experimental Science and Engineering,9(1),11–16. https://doi.org/10.22399/ijcesen.1070505",
+      "Sharma, J., & Mitra, S. K. (2024). Developing a used car pricing model applying multivariate adaptive regression splines approach. Expert Systems with Applications,236,121277. https://doi.org/10.1016/j.eswa.2023.121277",
+      "Bergmann, S., & Feuerriegel, S. (2025). Machine learning for predicting used car resale prices using granular vehicle equipment information. Expert Systems with Applications,263,125640. https://doi.org/10.1016/j.eswa.2024.125640",
+      "Grinsztajn, L., Oyallon, E., & Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? NeurIPS35,507–520. https://doi.org/10.52202/068431-0037",
+      "Different asking-price and sales targets, country/currency, dates, samples, exclusions and target transforms prevent ranking our currency errors against these papers."
+    ],
+    "notesRU": "**Алишер:** Обзор включает Казахстан и исследования других рынков. Barlybayev и коллеги дают местный контекст, Gollapalli и коллеги сравнивают линейные и древесные модели. Sharma и Mitra изучают нелинейные зависимости, Bergmann и Feuerriegel — значение подробной комплектации.\n\n**Аслан:** Работа Cui использует другую нейросетевую и boosting схему; её результат не подтверждает автоматически наш fixed average. Общие исследования tabular learning мотивируют сильные tree baselines рядом с ANN. Сравнивать опубликованные MAE напрямую нельзя: различаются валюта, target, фильтрация и выборки. Главный оставшийся вопрос — сохранится ли наше ранжирование на новых независимых объявлениях Казахстана."
+  },
+  {
+    "sceneId": "proposal",
+    "start": 260,
     "duration": 20,
     "title": "Proposed independent follow-up study",
     "speaker": "Alisher and Aslan",
@@ -342,7 +370,7 @@
   },
   {
     "sceneId": "conclusion",
-    "start": 260,
+    "start": 280,
     "duration": 20,
     "title": "Conclusions and contributions",
     "speaker": "Alisher and Aslan",
@@ -359,7 +387,7 @@
   {
     "sceneId": "thanks",
     "title": "Thank you! — extra live closing screen",
-    "start": 280,
+    "start": 300,
     "duration": 20,
     "notes": "Завершение выступления и переход к вопросам.",
     "notesRU": "Завершение выступления и переход к вопросам.",
@@ -526,7 +554,12 @@
   </div>
 </section>
 
-<section id="proposal" class="scene-frame hud-scene proposal-scene" data-scene-id="proposal" data-composition-id="proposal" data-start="240" data-duration="20" data-width="1920" data-height="1080" data-label="Proposed independent follow-up">
+<section id="literature" class="scene-frame hud-scene literature-scene" data-scene-id="literature" data-composition-id="literature" data-start="240" data-duration="20" data-width="1920" data-height="1080" data-label="Related research and the gap">
+ <div class="windshield"><header class="scene-heading" data-anim="title"><p class="section-name">Related research</p><h1>Published evidence, then a new test</h1></header>
+ <div class="research-list"><div class="research-row" data-stage="0"><a href="https://doi.org/10.18280/isi.280512" target="_blank" rel="noopener" title="Barlybayev, A., Sankibayev, A., Kadyr, Y., Amangeldy, N., &amp; Sabyrov, T. (2023). Predicting used-vehicle resale value in developing markets: Application of machine learning models to the Kazakhstan car market. *Ingénierie des Systèmes d’Information, 28*(5), 1237–1246. https://doi.org/10.18280/isi.280512">Barlybayev et al. (2023)</a><p><strong>Kazakhstan precedent</strong><span>Multiple model families on local Kolesa listings.</span></p></div><div class="research-row" data-stage="0"><a href="https://doi.org/10.18280/mmep.100115" target="_blank" rel="noopener" title="Gollapalli, M., Alqahtani, T. A., Alhamed, D. H., Alnassar, M. R., Alajmi, A. M., Alali, Y. H., Abdulqader, M. M., &amp; Saadeldeen, A. (2023). Intelligent modelling techniques for predicting used cars prices in Saudi Arabia. *Mathematical Modelling of Engineering Problems, 10*(1), 139–148. https://doi.org/10.18280/mmep.100115">Gollapalli et al. (2023)</a><p><strong>Evidence across markets</strong><span>Linear and tree models on Saudi listings.</span></p></div><div class="research-row" data-stage="1"><a href="https://doi.org/10.1016/j.eswa.2023.121277" target="_blank" rel="noopener" title="Sharma, J., &amp; Mitra, S. K. (2024). Developing a used car pricing model applying multivariate adaptive regression splines approach. *Expert Systems with Applications, 236*, Article 121277. https://doi.org/10.1016/j.eswa.2023.121277">Sharma &amp; Mitra (2024)</a><p><strong>Nonlinear relationships</strong><span>Multivariate adaptive regression splines.</span></p></div><div class="research-row" data-stage="1"><a href="https://doi.org/10.1016/j.eswa.2024.125640" target="_blank" rel="noopener" title="Bergmann, S., &amp; Feuerriegel, S. (2025). Machine learning for predicting used car resale prices using granular vehicle equipment information. *Expert Systems with Applications, 263*, Article 125640. https://doi.org/10.1016/j.eswa.2024.125640">Bergmann &amp; Feuerriegel (2025)</a><p><strong>More detailed inputs</strong><span>Granular vehicle equipment information.</span></p></div><div class="research-row" data-stage="2"><a href="https://doi.org/10.3390/electronics11182932" target="_blank" rel="noopener" title="Cui, B., Ye, Z., Zhao, H., Renqing, Z., Meng, L., &amp; Yang, Y. (2022). Used car price prediction based on the iterative framework of XGBoost+LightGBM. *Electronics, 11*(18), Article 2932. https://doi.org/10.3390/electronics11182932">Cui et al. (2022)</a><p><strong>A different hybrid design</strong><span>Iterative boosting / neural framework.</span></p></div><div class="research-row" data-stage="2"><a href="https://doi.org/10.52202/068431-0037" target="_blank" rel="noopener" title="Grinsztajn, L., Oyallon, E., &amp; Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? *Advances in Neural Information Processing Systems, 35*, 507–520. https://doi.org/10.52202/068431-0037">Grinsztajn et al. (2022)</a><p><strong>Strong tabular controls</strong><span>Tree baselines alongside neural networks.</span></p></div></div><div class="research-gap" data-anim="annotation"><span>Open question</span><p>Does our ranking persist on new, dated Kazakhstan listings?</p></div><p class="research-limit">Different datasets and currencies prevent direct score rankings. <a href="../references.html" target="_blank" rel="noopener">Full APA bibliography</a> accompanies the report.</p></div>
+</section>
+
+<section id="proposal" class="scene-frame hud-scene proposal-scene" data-scene-id="proposal" data-composition-id="proposal" data-start="260" data-duration="20" data-width="1920" data-height="1080" data-label="Proposed independent follow-up">
  <div class="windshield"><header class="scene-heading" data-anim="title"><p class="section-name">Future study · not completed</p><h1>A six-week independent follow-up</h1></header>
  <div class="proposal-scope" data-anim="none"><div data-stage="0"><p class="later-count">800–1,200</p><p class="later-label">distinct later listings</p><p class="scope-note">Feasibility target, if access permits.</p></div><div class="frozen-methods" data-stage="1"><p class="minor-heading">Freeze before evaluation</p><p>Ensemble · single ANN<br>Random forest · training median</p><span>Same eligible listings for all four.</span></div></div>
  <div class="proposal-outcome" data-stage="2"><span>Paired MAE difference</span><p>MAE(ensemble) − MAE(training median)</p><small>Vehicle-group bootstrap if linkage is reliable.</small></div>
@@ -534,13 +567,13 @@
  <p class="proposal-boundary" data-anim="annotation">New training or tuning is exploratory.</p></div>
 </section>
 
-<section id="conclusion" class="scene-frame exterior-scene conclusion-scene" data-scene-id="conclusion" data-composition-id="conclusion" data-start="260" data-duration="20" data-width="1920" data-height="1080" data-label="Results and team">
+<section id="conclusion" class="scene-frame exterior-scene conclusion-scene" data-scene-id="conclusion" data-composition-id="conclusion" data-start="280" data-duration="20" data-width="1920" data-height="1080" data-label="Results and team">
  <img class="outro-wide" src="../assets/car-finale-v3/neutral.png" alt="Porsche 911 GT3 R, returning to the opening camera view">
  <div class="exterior-results" data-anim="none"><p class="section-name">Results and team</p><h1>Historical test MAE</h1><div class="exterior-numbers"><strong>1.635<span> million KZT</span></strong><p><b>72.53%</b><span>below the training-median baseline</span></p></div></div>
  <div class="exterior-roles" data-anim="none"><div><h2>Alisher Akhmet</h2><p>Dataset sourcing, cleaning, feature engineering,<br>EDA, K-Means and PCA</p></div><div><h2>Aslan Muratov</h2><p>Supervised models, CV, ANN and ensemble,<br>metrics, error analysis and reproducibility</p></div></div>
 </section>
 
-<section id="thanks" class="scene-frame exterior-scene thanks-scene" data-scene-id="thanks" data-composition-id="thanks" data-start="280" data-duration="20" data-width="1920" data-height="1080" data-label="Thank you!">
+<section id="thanks" class="scene-frame exterior-scene thanks-scene" data-scene-id="thanks" data-composition-id="thanks" data-start="300" data-duration="20" data-width="1920" data-height="1080" data-label="Thank you!">
  <video id="thanks-film" class="outro-wide thanks-film" src="../assets/car-finale-v7/closing.mp4" poster="../assets/car-finale-v3/neutral.png" data-start="300" data-duration="5.066667" data-pass-start-frame="59" data-pass-end-frame="131" data-pass-fps="30" data-rear-start="-929.9999" data-rear-step="40.694444" data-light-end="1.8" muted playsinline preload="auto" aria-hidden="true"></video>
  <div class="thanks-whiteout" aria-hidden="true"></div><h1 id="thanks-title" class="thanks-title">THANK YOU!</h1>
 </section>

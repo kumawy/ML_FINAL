@@ -103,4 +103,4 @@ Median and supervised baselines, cross-validation and tuning, feedforward ANN an
 
 The [comparison table](code/results/model_comparison.csv) records nine pipelines and ensemble MAE of 1,634,564 KZT on the historical test. The [ANN history](code/results/ann_history.csv), [error analysis](code/results/error_by_price_band.csv) and [evaluation tests](code/tests/test_evaluation.py) document the model checks. The full reproduction passed 40 tests and matched all 383 saved test predictions.
 
-The work is grouped by the roles on slide 14. The checks are recorded at project level. Each team member should confirm their individual work and checks before submission.
+The work is grouped by the roles on slide 15. The checks are recorded at project level. Each team member should confirm their individual work and checks before submission.

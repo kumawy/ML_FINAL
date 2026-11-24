@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the offline fifteen-scene cockpit presentation from authored parts."""
+"""Assemble the offline sixteen-scene cockpit presentation from authored parts."""
 from __future__ import annotations
 
 from html.parser import HTMLParser
@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parent
-IDS = ['cover','question','data','eda-price','eda-mileage','protocol','supervised','clusters','pca','ann','comparison','errors','proposal','conclusion','thanks']
+IDS = ['cover','question','data','eda-price','eda-mileage','protocol','supervised','clusters','pca','ann','comparison','errors','literature','proposal','conclusion','thanks']
 PARTS = ['approved-pilot.html','evidence.html','methods.html','synthesis.html','pca.html']
 
 
@@ -21,7 +21,7 @@ def manifest():
     data = json.loads(path.read_text())
     scenes = data if isinstance(data, list) else data.get('scenes', data.get('slides'))
     if not isinstance(scenes, list) or [x.get('sceneId') for x in scenes] != IDS:
-        raise ValueError('Expected authored fifteen-scene order: ' + ', '.join(IDS))
+        raise ValueError('Expected authored sixteen-scene order: ' + ', '.join(IDS))
     for i, scene in enumerate(scenes):
         if scene.get('start') != i * 20 or scene.get('duration') != 20:
             raise ValueError(f'{scene["sceneId"]}: expected start={i*20}, duration=20')
